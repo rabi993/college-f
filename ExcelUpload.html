@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Excel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="p-4">
+    <div class="container">
+        <h2 class="mb-4">Upload Excel Files</h2>
+
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#uploadModal">Add Excel</button>
+
+        <table class="table table-bordered" id="excelTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Excel File</th>
+                    <th>Download File</th>
+                    <th>Comment</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="uploadForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Excel File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editId" />
+                    <div class="mb-3">
+                        <label for="excelFile" class="form-label">Excel File</label>
+                        <input type="file" class="form-control" id="excelFile" name="excel_file" />
+                        <div id="currentFile" class="mt-2"></div> <!-- Placeholder to show current file -->
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="comment" name="comment" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/college/upload-excel/";
+        const tableBody = document.querySelector("#excelTable tbody");
+        const uploadForm = document.getElementById("uploadForm");
+        const editIdInput = document.getElementById("editId");
+
+        const fetchData = () => {
+            fetch(API_URL)
+                .then(res => res.json())
+                .then(data => {
+                    tableBody.innerHTML = "";
+                    data.forEach(item => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+              <td>${item.id}</td>
+              <td>${item.excel_file}</td>
+              <td><a href="${item.excel_file}" target="_blank"><button class="btn btn-sm btn-success" >Download</button></a></td>
+              
+              <td>${item.comment}</td>
+              <td>${new Date(item.created_at).toLocaleString()}</td>
+              <td>
+                <button class="btn btn-sm btn-info" onclick="editExcel(${item.id}, '${item.comment.replace(/'/g, "\\'")}', '${item.excel_file}')">Edit</button>
+
+                <button class="btn btn-sm btn-danger" onclick="deleteExcel(${item.id})">Delete</button>
+              </td>`;
+                        tableBody.appendChild(row);
+                    });
+                });
+        };
+
+        const editExcel = (id, comment, excelFileUrl) => {
+            editIdInput.value = id;
+            document.getElementById("comment").value = comment;
+
+            // Show the current file as a download link
+            const currentFileDiv = document.getElementById("currentFile");
+            currentFileDiv.innerHTML = excelFileUrl
+                ? `<a href="${excelFileUrl}" target="_blank">Current File</a>`
+                : "No file available";
+
+            // Reset file input
+            document.getElementById("excelFile").value = "";
+
+            new bootstrap.Modal(document.getElementById("uploadModal")).show();
+        };
+
+
+        const deleteExcel = (id) => {
+            if (confirm("Are you sure you want to delete this file?")) {
+                fetch(`${API_URL}${id}/`, {
+                    method: "DELETE",
+                }).then(() => fetchData());
+            }
+        };
+
+
+        uploadForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const id = editIdInput.value;
+            const url = id ? `${API_URL}${id}/` : API_URL;
+            const formData = new FormData();
+            const fileInput = document.getElementById("excelFile");
+            const comment = document.getElementById("comment").value;
+            formData.append("comment", comment);
+
+            if (fileInput.files.length > 0) {
+                formData.append("excel_file", fileInput.files[0]);
+            }
+
+            if (id) {
+                // PATCH works more reliably with file uploads than PUT
+                fetch(url, {
+                    method: 'PATCH',
+                    body: formData,
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Failed to update");
+                        return response.json();
+                    })
+                    .then(() => {
+                        fetchData();
+                        bootstrap.Modal.getInstance(document.getElementById("uploadModal")).hide();
+                        uploadForm.reset();
+                        editIdInput.value = "";
+                    })
+                    .catch(err => alert("Error updating: " + err.message));
+            } else {
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Failed to create");
+                        return response.json();
+                    })
+                    .then(() => {
+                        fetchData();
+                        bootstrap.Modal.getInstance(document.getElementById("uploadModal")).hide();
+                        uploadForm.reset();
+                        editIdInput.value = "";
+                    })
+                    .catch(err => alert("Error creating: " + err.message));
+            }
+        });
+
+
+        window.onload = fetchData;
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

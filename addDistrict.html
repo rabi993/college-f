@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>District Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<div class="container">
+  <h2 class="mb-4">District Management</h2>
+  <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#districtModal" onclick="openAddModal()">Add District</button>
+
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>District Name</th>
+      <th>Division Name</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="districtTableBody"></tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="districtModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="districtForm">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Add District</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="districtId">
+        <div class="mb-3">
+          <label for="districtName" class="form-label">District Name</label>
+          <input type="text" class="form-control" id="districtName" required>
+        </div>
+        <div class="mb-3">
+          <label for="divisionId" class="form-label">Division</label>
+          <select class="form-select" id="divisionId" required></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const DISTRICT_API = 'http://127.0.0.1:8000/college/districts/';
+  const DIVISION_API = 'http://127.0.0.1:8000/college/divisions/';
+
+  const tableBody = document.getElementById("districtTableBody");
+  const districtForm = document.getElementById("districtForm");
+  const districtIdInput = document.getElementById("districtId");
+  const districtNameInput = document.getElementById("districtName");
+  const divisionIdSelect = document.getElementById("divisionId");
+  const modalTitle = document.getElementById("modalTitle");
+  const bootstrapModal = new bootstrap.Modal(document.getElementById('districtModal'));
+
+  let divisionsMap = {};
+
+  // Fetch all divisions
+  function fetchDivisions() {
+    return fetch(DIVISION_API)
+      .then(res => res.json())
+      .then(data => {
+        divisionsMap = {};
+        divisionIdSelect.innerHTML = "";
+        data.forEach(division => {
+          divisionsMap[division.id] = division.name;
+          const option = document.createElement("option");
+          option.value = division.id;
+          option.textContent = division.name;
+          divisionIdSelect.appendChild(option);
+        });
+      })
+      .catch(err => console.error("Failed to fetch divisions:", err));
+  }
+
+  // Fetch and render districts
+  function fetchDistricts() {
+    fetch(DISTRICT_API)
+      .then(res => res.json())
+      .then(data => {
+        tableBody.innerHTML = "";
+        data.forEach(d => {
+          const divisionName = divisionsMap[d.division] || "Unknown";
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${d.id}</td>
+            <td>${d.name}</td>
+            <td>${divisionName}</td>
+            <td>
+              <button class="btn btn-sm btn-info me-1" onclick="openEditModal(${d.id}, '${d.name}', ${d.division})">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteDistrict(${d.id})">Delete</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching districts:", error);
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-danger">Failed to load data</td></tr>`;
+      });
+  }
+
+  // Open add modal
+  window.openAddModal = function () {
+    districtForm.reset();
+    districtIdInput.value = "";
+    modalTitle.textContent = "Add District";
+  }
+
+  // Open edit modal
+  window.openEditModal = function (id, name, division) {
+    districtIdInput.value = id;
+    districtNameInput.value = name;
+    divisionIdSelect.value = division;
+    modalTitle.textContent = "Edit District";
+    bootstrapModal.show();
+  }
+
+  // Submit form
+  districtForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const id = districtIdInput.value;
+    const name = districtNameInput.value;
+    const division = divisionIdSelect.value;
+    const method = id ? "PATCH" : "POST";
+    const url = id ? `${DISTRICT_API}${id}/` : DISTRICT_API;
+
+    fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, division }),
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to save district");
+      return res.json();
+    })
+    .then(() => {
+      fetchDistricts();
+      bootstrapModal.hide();
+    })
+    .catch(err => alert(err.message));
+  });
+
+  // Delete district
+  window.deleteDistrict = function (id) {
+    if (confirm("Are you sure you want to delete this district?")) {
+      fetch(`${DISTRICT_API}${id}/`, { method: "DELETE" })
+        .then(() => fetchDistricts())
+        .catch(err => alert("Error deleting: " + err.message));
+    }
+  }
+
+  // Initialize
+  fetchDivisions().then(fetchDistricts);
+});
+</script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>District Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<div class="container">
+  <h2 class="mb-4">District Management</h2>
+  <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#districtModal" onclick="openAddModal()">Add District</button>
+
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>District Name</th>
+      <th>Division ID</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="districtTableBody"></tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="districtModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="districtForm">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Add District</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="districtId">
+        <div class="mb-3">
+          <label for="districtName" class="form-label">District Name</label>
+          <input type="text" class="form-control" id="districtName" required>
+        </div>
+        <div class="mb-3">
+          <label for="divisionId" class="form-label">Division ID</label>
+          <input type="number" class="form-control" id="divisionId" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const API_URL = 'http://127.0.0.1:8000/college/districts/';
+  const tableBody = document.getElementById("districtTableBody");
+  const districtForm = document.getElementById("districtForm");
+  const districtIdInput = document.getElementById("districtId");
+  const districtNameInput = document.getElementById("districtName");
+  const divisionIdInput = document.getElementById("divisionId");
+  const modalTitle = document.getElementById("modalTitle");
+  const districtModalEl = document.getElementById('districtModal');
+  const bootstrapModal = new bootstrap.Modal(districtModalEl);
+
+  // Fetch and render districts
+  function fetchDistricts() {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        tableBody.innerHTML = "";
+        data.forEach(d => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${d.id}</td>
+            <td>${d.name}</td>
+            <td>${d.division}</td>
+            <td>
+              <button class="btn btn-sm btn-info me-1" onclick="openEditModal(${d.id}, '${d.name}', ${d.division})">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteDistrict(${d.id})">Delete</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching districts:", error);
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-danger">Failed to load data</td></tr>`;
+      });
+  }
+
+  // Open add modal
+  window.openAddModal = function () {
+    districtForm.reset();
+    districtIdInput.value = "";
+    modalTitle.textContent = "Add District";
+  }
+
+  // Open edit modal
+  window.openEditModal = function (id, name, division) {
+    districtIdInput.value = id;
+    districtNameInput.value = name;
+    divisionIdInput.value = division;
+    modalTitle.textContent = "Edit District";
+    bootstrapModal.show();
+  }
+
+  // Submit form
+  districtForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const id = districtIdInput.value;
+    const name = districtNameInput.value;
+    const division = divisionIdInput.value;
+    const method = id ? "PATCH" : "POST";
+    const url = id ? `${API_URL}${id}/` : API_URL;
+
+    fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, division }),
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to save district");
+      return res.json();
+    })
+    .then(() => {
+      fetchDistricts();
+      bootstrapModal.hide();
+    })
+    .catch(err => alert(err.message));
+  });
+
+  // Delete district
+  window.deleteDistrict = function (id) {
+    if (confirm("Are you sure you want to delete this district?")) {
+      fetch(`${API_URL}${id}/`, { method: "DELETE" })
+        .then(() => fetchDistricts())
+        .catch(err => alert("Error deleting: " + err.message));
+    }
+  }
+
+  fetchDistricts();
+});
+</script>
+</body>
+</html> -->

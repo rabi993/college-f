@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Union Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<div class="container">
+  <h2 class="mb-4">Union Management</h2>
+  <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#unionModal" onclick="openAddModal()">Add Union</button>
+
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Union Name</th>
+      <th>Upazila</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="unionTableBody"></tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="unionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="unionForm">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Add Union</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="unionId">
+        <div class="mb-3">
+          <label for="unionName" class="form-label">Union Name</label>
+          <input type="text" class="form-control" id="unionName" required>
+        </div>
+        <div class="mb-3">
+          <label for="upazilaId" class="form-label">Upazila</label>
+          <select class="form-select" id="upazilaId" required>
+            <option value="">Select Upazila</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const UNION_API = 'http://127.0.0.1:8000/college/unions/';
+  const UPAZILA_API = 'http://127.0.0.1:8000/college/upazilas/';
+
+  const tableBody = document.getElementById("unionTableBody");
+  const unionForm = document.getElementById("unionForm");
+  const unionIdInput = document.getElementById("unionId");
+  const unionNameInput = document.getElementById("unionName");
+  const upazilaIdSelect = document.getElementById("upazilaId");
+  const modalTitle = document.getElementById("modalTitle");
+  const bootstrapModal = new bootstrap.Modal(document.getElementById('unionModal'));
+
+  let upazilaMap = {};
+
+  // Fetch and render Unions
+  function fetchUnions() {
+    fetch(UNION_API)
+      .then(res => res.json())
+      .then(data => {
+        tableBody.innerHTML = "";
+        data.forEach(union => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${union.id}</td>
+            <td>${union.name}</td>
+            <td>${upazilaMap[union.upazila] || 'N/A'}</td>
+            <td>
+              <button class="btn btn-sm btn-info me-1" onclick="openEditModal(${union.id}, '${union.name}', ${union.upazila})">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteUnion(${union.id})">Delete</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching unions:", error);
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-danger">Failed to load data</td></tr>`;
+      });
+  }
+
+  // Fetch Upazilas and populate select
+  function fetchUpazilas() {
+    fetch(UPAZILA_API)
+      .then(res => res.json())
+      .then(data => {
+        upazilaMap = {};
+        upazilaIdSelect.innerHTML = `<option value="">Select Upazila</option>`;
+        data.forEach(u => {
+          upazilaMap[u.id] = u.name;
+          const option = document.createElement("option");
+          option.value = u.id;
+          option.textContent = `${u.name},${u.district}`;
+          upazilaIdSelect.appendChild(option);
+        });
+        fetchUnions();
+      })
+      .catch(err => console.error("Error fetching upazilas:", err));
+  }
+
+  // Open add modal
+  window.openAddModal = function () {
+    unionForm.reset();
+    unionIdInput.value = "";
+    modalTitle.textContent = "Add Union";
+  }
+
+  // Open edit modal
+  window.openEditModal = function (id, name, upazilaId) {
+    unionIdInput.value = id;
+    unionNameInput.value = name;
+    upazilaIdSelect.value = upazilaId;
+    modalTitle.textContent = "Edit Union";
+    bootstrapModal.show();
+  }
+
+  // Submit form
+  unionForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const id = unionIdInput.value;
+    const name = unionNameInput.value;
+    const upazila = upazilaIdSelect.value;
+
+    const method = id ? "PATCH" : "POST";
+    const url = id ? `${UNION_API}${id}/` : UNION_API;
+
+    fetch(url, {
+      method: method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, upazila }),
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to save union");
+      return res.json();
+    })
+    .then(() => {
+      fetchUnions();
+      bootstrapModal.hide();
+    })
+    .catch(err => alert(err.message));
+  });
+
+  // Delete union
+  window.deleteUnion = function (id) {
+    if (confirm("Are you sure you want to delete this union?")) {
+      fetch(`${UNION_API}${id}/`, { method: "DELETE" })
+        .then(() => fetchUnions())
+        .catch(err => alert("Error deleting: " + err.message));
+    }
+  }
+
+  // Initial load
+  fetchUpazilas();
+});
+</script>
+</body>
+</html>
