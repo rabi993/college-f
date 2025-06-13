@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="p-4">
+    <div class="container">
+        <h2 class="mb-4">Teacher List</h2>
+
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal">Add Teacher</button>
+            <button class="btn btn-secondary" id="resetFilters">Reset Filters</button>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card p-3 mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-2">
+                    <label><strong>Division</strong></label>
+                    <select class="form-select" id="filterDivision">
+                        <option value="">All Divisions</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label><strong>District</strong></label>
+                    <select class="form-select" id="filterDistrict">
+                        <option value="">All Districts</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label><strong>Upazila</strong></label>
+                    <select class="form-select" id="filterUpazila">
+                        <option value="">All Upazilas</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label><strong>Union</strong></label>
+                    <select class="form-select" id="filterUnion">
+                        <option value="">All Unions</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label><strong>College</strong></label>
+                    <select class="form-select" id="filterCollege">
+                        <option value="">All Colleges</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" id="filterTeacher" class="form-control" placeholder="Search by teacher name">
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>College</th>
+                    <th>Division</th>
+                    <th>District</th>
+                    <th>Upazila</th>
+                    <th>Union</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="teacherTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Add/Edit Teacher Modal -->
+    <!-- Add/Edit Teacher Modal -->
+    <div class="modal fade" id="teacherModal" tabindex="-1" aria-labelledby="teacherModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="teacherForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="teacherModalLabel">Add Teacher</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editTeacherId" />
+                    <div class="mb-2">
+                        <label>Name</label>
+                        <input type="text" class="form-control" name="name" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Designation</label>
+                        <input type="text" class="form-control" name="designation" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Subject</label>
+                        <input type="text" class="form-control" name="subject" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Phone</label>
+                        <input type="text" class="form-control" name="phone" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Division</label>
+                        <select class="form-select" id="teacherDivisionSelect" required></select>
+                    </div>
+                    <div class="mb-2">
+                        <label>District</label>
+                        <select class="form-select" id="teacherDistrictSelect" required></select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Upazila</label>
+                        <select class="form-select" id="teacherUpazilaSelect" required></select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Union</label>
+                        <select class="form-select" id="teacherUnionSelect" required></select>
+                    </div>
+                    <div class="mb-2">
+                        <label>College</label>
+                        <select class="form-select" id="teacherCollegeSelect" required></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save Teacher</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script>
+        const selects = {
+            division: document.getElementById("teacherDivisionSelect"),
+            district: document.getElementById("teacherDistrictSelect"),
+            upazila: document.getElementById("teacherUpazilaSelect"),
+            union: document.getElementById("teacherUnionSelect"),
+            college: document.getElementById("teacherCollegeSelect"),
+        };
+
+
+        const filters = {
+            division: document.getElementById("filterDivision"),
+            district: document.getElementById("filterDistrict"),
+            upazila: document.getElementById("filterUpazila"),
+            union: document.getElementById("filterUnion"),
+            college: document.getElementById("filterCollege"),
+            teacher: document.getElementById("filterTeacher"),
+        };
+
+        const teacherTable = document.getElementById("teacherTableBody");
+
+        let divisions = [], districts = [], upazilas = [], unions = [], colleges = [], teachers = [];
+
+        async function fetchData(url) {
+            const res = await fetch(url);
+            return res.json();
+        }
+
+        async function initializeData() {
+            divisions = await fetchData("http://127.0.0.1:8000/college/divisions/");
+            districts = await fetchData("http://127.0.0.1:8000/college/districts/");
+            upazilas = await fetchData("http://127.0.0.1:8000/college/upazilas/");
+            unions = await fetchData("http://127.0.0.1:8000/college/unions/");
+            colleges = await fetchData("http://127.0.0.1:8000/college/colleges/");
+            teachers = await fetchData("http://127.0.0.1:8000/college/teachers/");
+            populateDropdown(selects.division, divisions);
+            populateDropdown(filters.division, divisions);
+            populateDropdown(filters.upazila, upazilas);
+            populateDropdown(filters.union, unions);
+            populateDropdown(filters.college, colleges);
+
+            renderTeachers();
+        }
+
+        function populateDropdown(select, data, key = null, value = null) {
+            select.innerHTML = '<option value="">Select</option>';
+            data.filter(item => !key || item[key] == value)
+                .forEach(item => select.innerHTML += `<option value="${item.id}">${item.name}</option>`);
+        }
+
+        function renderTeachers() {
+            let filtered = [...teachers];
+            if (filters.division.value) filtered = filtered.filter(t => t.division == filters.division.value);
+            if (filters.district.value) filtered = filtered.filter(t => t.district == filters.district.value);
+            if (filters.upazila.value) filtered = filtered.filter(t => t.upazila == filters.upazila.value);
+            if (filters.union.value) filtered = filtered.filter(t => t.union == filters.union.value);
+            if (filters.college.value) filtered = filtered.filter(t => t.college == filters.college.value);
+            if (filters.teacher.value) filtered = filtered.filter(t => t.name.toLowerCase().includes(filters.teacher.value.toLowerCase()));
+
+            teacherTable.innerHTML = "";
+            filtered.forEach(t => {
+                teacherTable.innerHTML += `
+          <tr>
+            <td>${t.id}</td>
+            <td>${t.name}</td>
+            <td>${getName(colleges, t.college)}</td>
+            <td>${getName(divisions, t.division)}</td>
+            <td>${getName(districts, t.district)}</td>
+            <td>${getName(upazilas, t.upazila)}</td>
+            <td>${getName(unions, t.union)}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick='editTeacher(${JSON.stringify(t)})'>Edit</button>
+              <button class="btn btn-sm btn-danger" onclick='deleteTeacher(${t.id})'>Delete</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        function getName(arr, id) {
+            const item = arr.find(i => i.id == id);
+            return item ? item.name : "N/A";
+        }
+
+        function editTeacher(teacher) {
+            document.getElementById("teacherModalLabel").innerText = "Edit Teacher";
+            document.getElementById("editTeacherId").value = teacher.id;
+
+            document.querySelector("#teacherForm [name=name]").value = teacher.name;
+            document.querySelector("#teacherForm [name=designation]").value = teacher.designation;
+            document.querySelector("#teacherForm [name=subject]").value = teacher.subject;
+            document.querySelector("#teacherForm [name=phone]").value = teacher.phone;
+
+            teacherDivisionSelect.value = teacher.division;
+            populateSelect(teacherDistrictSelect, districts, "division", teacher.division);
+            teacherDistrictSelect.value = teacher.district;
+
+            populateSelect(teacherUpazilaSelect, upazilas, "district", teacher.district);
+            teacherUpazilaSelect.value = teacher.upazila;
+
+            populateSelect(teacherUnionSelect, unions, "upazila", teacher.upazila);
+            teacherUnionSelect.value = teacher.union;
+
+            populateSelect(teacherCollegeSelect, colleges, "union", teacher.union);
+            teacherCollegeSelect.value = teacher.college;
+
+            new bootstrap.Modal(document.getElementById("teacherModal")).show();
+        }
+
+
+        async function deleteTeacher(id) {
+            if (confirm("Delete teacher?")) {
+                await fetch(`http://127.0.0.1:8000/college/teachers/${id}/`, { method: "DELETE" });
+                await initializeData();
+            }
+        }
+
+        document.getElementById("teacherForm").onsubmit = async function (e) {
+            e.preventDefault();
+            const id = document.getElementById("editTeacherId").value;
+
+            const formData = {
+                name: this.name.value,
+                designation: this.designation.value,
+                subject: this.subject.value,
+                phone: this.phone.value,
+                division: teacherDivisionSelect.value,
+                district: teacherDistrictSelect.value,
+                upazila: teacherUpazilaSelect.value,
+                union: teacherUnionSelect.value,
+                college: teacherCollegeSelect.value
+            };
+
+            const url = id ? `http://127.0.0.1:8000/college/teachers/${id}/` : "http://127.0.0.1:8000/college/teachers/";
+            const method = id ? "PUT" : "POST";
+            await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+            bootstrap.Modal.getInstance(document.getElementById("teacherModal")).hide();
+            this.reset();
+            await initializeData();
+        };
+
+        Object.values(filters).forEach(input => input.addEventListener("change", renderTeachers));
+        filters.teacher.addEventListener("input", renderTeachers);
+        document.getElementById("resetFilters").onclick = () => {
+            Object.values(filters).forEach(el => el.value = "");
+            renderTeachers();
+        };
+
+        selects.division.onchange = () => {
+            populateDropdown(selects.district, districts, "division", selects.division.value);
+            selects.upazila.innerHTML = '<option value="">Select</option>';
+            selects.union.innerHTML = '<option value="">Select</option>';
+            selects.college.innerHTML = '<option value="">Select</option>';
+        };
+        selects.district.onchange = () => {
+            populateDropdown(selects.upazila, upazilas, "district", selects.district.value);
+        };
+        selects.upazila.onchange = () => {
+            populateDropdown(selects.union, unions, "upazila", selects.upazila.value);
+        };
+        selects.union.onchange = () => {
+            populateDropdown(selects.college, colleges, "union", selects.union.value);
+        };
+        // function applyTeacherFilters() {
+        //     let filtered = [...allTeachers];
+
+        //     if (filterDivision.value) filtered = filtered.filter(t => t.division == filterDivision.value);
+        //     if (filterDistrict.value) filtered = filtered.filter(t => t.district == filterDistrict.value);
+        //     if (filterUpazila.value) filtered = filtered.filter(t => t.upazila == filterUpazila.value);
+        //     if (filterUnion.value) filtered = filtered.filter(t => t.union == filterUnion.value);
+        //     if (filterCollege.value) filtered = filtered.filter(t => t.college == filterCollege.value);
+        //     if (filterTeacherName.value) {
+        //         filtered = filtered.filter(t =>
+        //             t.name.toLowerCase().includes(filterTeacherName.value.toLowerCase())
+        //         );
+        //     }
+
+        //     renderTeacherTable(filtered);
+        // }
+
+        window.onload = initializeData;
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
