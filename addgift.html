@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gift Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="p-4">
+    <div class="container">
+        <h2 class="mb-4">Gift List</h2>
+
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#giftModal">Add Gift</button>
+            <button class="btn btn-secondary" id="resetFilters">Reset Filters</button>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card p-3 mb-3">
+            <div class="row g-2">
+                <div class="col-md-2"><select id="filterDivision" class="form-select">
+                        <option value="">All Divisions</option>
+                    </select></div>
+                <div class="col-md-2"><select id="filterDistrict" class="form-select">
+                        <option value="">All Districts</option>
+                    </select></div>
+                <div class="col-md-2"><select id="filterUpazila" class="form-select">
+                        <option value="">All Upazilas</option>
+                    </select></div>
+                <div class="col-md-2"><select id="filterUnion" class="form-select">
+                        <option value="">All Unions</option>
+                    </select></div>
+                <div class="col-md-2"><select id="filterCollege" class="form-select">
+                        <option value="">All Colleges</option>
+                    </select></div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Books</th>
+                    <th>Honorarium</th>
+                    <th>College</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="giftTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="giftModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="giftForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Gift</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="giftId">
+                    <input type="text" class="form-control mb-2" name="subject" placeholder="Subject" required>
+                    <input type="number" class="form-control mb-2" name="books" placeholder="Books" required>
+                    <input type="number" class="form-control mb-2" name="honorium" placeholder="Honorarium" required>
+                    <textarea class="form-control mb-2" name="comment" placeholder="Comment"></textarea>
+                    <select id="giftDivision" class="form-select mb-2" required></select>
+                    <select id="giftDistrict" class="form-select mb-2" required></select>
+                    <select id="giftUpazila" class="form-select mb-2" required></select>
+                    <select id="giftUnion" class="form-select mb-2" required></select>
+                    <select id="giftCollege" class="form-select mb-2" required></select>
+                    <select id="giftTeacher" class="form-select mb-2" required></select>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let divisions = [], districts = [], upazilas = [], unions = [], colleges = [], teachers = [], gifts = [];
+        const api = "http://127.0.0.1:8000/college/";
+
+        const selects = {
+            gift: {
+                division: document.getElementById("giftDivision"),
+                district: document.getElementById("giftDistrict"),
+                upazila: document.getElementById("giftUpazila"),
+                union: document.getElementById("giftUnion"),
+                college: document.getElementById("giftCollege"),
+                teacher: document.getElementById("giftTeacher")
+            },
+            filter: {
+                division: document.getElementById("filterDivision"),
+                district: document.getElementById("filterDistrict"),
+                upazila: document.getElementById("filterUpazila"),
+                union: document.getElementById("filterUnion"),
+                college: document.getElementById("filterCollege")
+            }
+        };
+
+        function populate(select, list, key = null, value = null) {
+            select.innerHTML = '<option value="">Select</option>';
+            list.filter(i => !key || i[key] == value).forEach(i => {
+                select.innerHTML += `<option value="${i.id}">${i.name}</option>`;
+            });
+        }
+
+        async function loadData() {
+            [divisions, districts, upazilas, unions, colleges, teachers, gifts] = await Promise.all([
+                fetch(api + "divisions/").then(r => r.json()),
+                fetch(api + "districts/").then(r => r.json()),
+                fetch(api + "upazilas/").then(r => r.json()),
+                fetch(api + "unions/").then(r => r.json()),
+                fetch(api + "colleges/").then(r => r.json()),
+                fetch(api + "teachers/").then(r => r.json()),
+                fetch(api + "gift/").then(r => r.json())
+            ]);
+            populate(selects.gift.division, divisions);
+            populate(selects.filter.division, divisions);
+            renderGifts();
+        }
+
+        function renderGifts() {
+            let list = [...gifts];
+            const f = selects.filter;
+            if (f.division.value) list = list.filter(g => g.division == f.division.value);
+            if (f.district.value) list = list.filter(g => g.district == f.district.value);
+            if (f.upazila.value) list = list.filter(g => g.upazila == f.upazila.value);
+            if (f.union.value) list = list.filter(g => g.union == f.union.value);
+            if (f.college.value) list = list.filter(g => g.college == f.college.value);
+
+            const body = document.getElementById("giftTableBody");
+            body.innerHTML = "";
+            list.forEach(g => {
+                const collegeName = colleges.find(c => c.id == g.college)?.name || "N/A";
+                body.innerHTML += `<tr><td>${g.id}</td><td>${g.subject}</td><td>${g.books}</td><td>${g.honorium}</td><td>${collegeName}</td><td><button class='btn btn-sm btn-warning' onclick='editGift(${g.id})'>Edit</button> <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})">Delete</button></td></tr>`;
+            });
+        }
+
+        function editGift(id) {
+            const g = gifts.find(x => x.id == id);
+            document.querySelector("#giftForm [name=subject]").value = g.subject;
+            document.querySelector("#giftForm [name=books]").value = g.books;
+            document.querySelector("#giftForm [name=honorium]").value = g.honorium;
+            document.querySelector("#giftForm [name=comment]").value = g.comment;
+            document.getElementById("giftId").value = g.id;
+
+            selects.gift.division.value = g.division;
+            populate(selects.gift.district, districts, "division", g.division);
+            selects.gift.district.value = g.district;
+            populate(selects.gift.upazila, upazilas, "district", g.district);
+            selects.gift.upazila.value = g.upazila;
+            populate(selects.gift.union, unions, "upazila", g.upazila);
+            selects.gift.union.value = g.union;
+            populate(selects.gift.college, colleges, "union", g.union);
+            selects.gift.college.value = g.college;
+            populate(selects.gift.teacher, teachers, "college", g.college);
+            selects.gift.teacher.value = g.teacher;
+
+            new bootstrap.Modal(document.getElementById("giftModal")).show();
+        }
+
+        ["division", "district", "upazila", "union"].forEach(level => {
+            selects.gift[level].onchange = () => {
+                const val = selects.gift[level].value;
+                const next = { division: "district", district: "upazila", upazila: "union", union: "college" }[level];
+                if (next) populate(selects.gift[next], eval(next + 's'), level, val);
+                if (next === "college") selects.gift.teacher.innerHTML = '<option value="">Select</option>';
+            };
+        });
+        selects.gift.college.onchange = () => populate(selects.gift.teacher, teachers, "college", selects.gift.college.value);
+
+        ["division", "district", "upazila", "union"].forEach(level => {
+            selects.filter[level].onchange = () => {
+                const val = selects.filter[level].value;
+                const next = { division: "district", district: "upazila", upazila: "union", union: "college" }[level];
+                if (next) populate(selects.filter[next], eval(next + 's'), level, val);
+                renderGifts();
+            };
+        });
+        selects.filter.college.onchange = renderGifts;
+
+        document.getElementById("resetFilters").onclick = () => {
+            Object.values(selects.filter).forEach(s => s.value = "");
+            renderGifts();
+        };
+
+        document.getElementById("giftForm").onsubmit = async function (e) {
+            e.preventDefault();
+            const id = document.getElementById("giftId").value;
+            const payload = {
+                subject: this.subject.value,
+                books: this.books.value,
+                honorium: this.honorium.value,
+                comment: this.comment.value,
+                division: selects.gift.division.value,
+                district: selects.gift.district.value,
+                upazila: selects.gift.upazila.value,
+                union: selects.gift.union.value,
+                college: selects.gift.college.value,
+                teacher: selects.gift.teacher.value,
+            };
+            const url = api + "gift/" + (id ? id + "/" : "");
+            await fetch(url, {
+                method: id ? "PUT" : "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            bootstrap.Modal.getInstance(document.getElementById("giftModal")).hide();
+            this.reset();
+            loadData();
+        };
+        async function deleteGift(id) {
+            if (confirm("Are you sure you want to delete this gift?")) {
+                const response = await fetch(`http://127.0.0.1:8000/college/gift/${id}/`, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    location.reload();  // reloads the whole page
+                } else {
+                    alert("Failed to delete the gift.");
+                }
+            }
+        }
+
+
+        window.onload = loadData;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
