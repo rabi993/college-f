@@ -137,6 +137,20 @@
           });
       }
 
+      const DISTRICT_API = 'http://127.0.0.1:8000/college/districts/';
+      function fetchDistricts() {
+        return fetch(DISTRICT_API)
+          .then(res => res.json())
+          .then(data => {
+            districtMap = {};
+            data.forEach(d => {
+              districtMap[d.id] = d.name;
+            });
+          });
+      }
+
+
+
       // Fetch Upazilas and populate select
       function fetchUpazilas() {
         fetch(UPAZILA_API)
@@ -146,15 +160,34 @@
             upazilaIdSelect.innerHTML = `<option value="">Select Upazila</option>`;
             data.forEach(u => {
               upazilaMap[u.id] = u.name;
+              const districtName = districtMap[u.district] || 'Unknown District';
               const option = document.createElement("option");
               option.value = u.id;
-              option.textContent = `${u.name},${u.district}`;
+              option.textContent = `${u.name}, ${districtName}`;
               upazilaIdSelect.appendChild(option);
             });
-            fetchUnions();
+            fetchUnions(); // Only fetch unions after upazilas are rendered
           })
           .catch(err => console.error("Error fetching upazilas:", err));
       }
+
+      // function fetchUpazilas() {
+      //   fetch(UPAZILA_API)
+      //     .then(res => res.json())
+      //     .then(data => {
+      //       upazilaMap = {};
+      //       upazilaIdSelect.innerHTML = `<option value="">Select Upazila</option>`;
+      //       data.forEach(u => {
+      //         upazilaMap[u.id] = u.name;
+      //         const option = document.createElement("option");
+      //         option.value = u.id;
+      //         option.textContent = `${u.name},${u.district}`;
+      //         upazilaIdSelect.appendChild(option);
+      //       });
+      //       fetchUnions();
+      //     })
+      //     .catch(err => console.error("Error fetching upazilas:", err));
+      // }
 
       // Open add modal
       window.openAddModal = function () {
@@ -208,7 +241,9 @@
       }
 
       // Initial load
-      fetchUpazilas();
+      // fetchUpazilas();
+      fetchDistricts().then(fetchUpazilas);
+
     });
   </script>
 </body>

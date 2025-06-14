@@ -144,6 +144,19 @@
           });
       }
 
+      const DIVISION_API = 'http://127.0.0.1:8000/college/divisions/';
+      function fetchDivisions() {
+        return fetch(DIVISION_API)
+          .then(res => res.json())
+          .then(data => {
+            divisionMap = {};
+            data.forEach(d => {
+              divisionMap[d.id] = d.name;
+            });
+          });
+      }
+
+      
       // Fetch districts and populate select
       function fetchDistricts() {
         fetch(DIST_API)
@@ -153,9 +166,10 @@
             districtIdSelect.innerHTML = `<option value="">Select District</option>`;
             data.forEach(d => {
               districtMap[d.id] = d.name;
+              const divisionName = divisionMap[d.division] || 'Unknown Division';
               const option = document.createElement("option");
               option.value = d.id;
-              option.textContent = `${d.name},${d.division}`;
+              option.textContent = `${d.name},${divisionName}`;
               districtIdSelect.appendChild(option);
             });
             fetchUpazilas();
@@ -217,7 +231,8 @@
       }
 
       // Initial load
-      fetchDistricts();
+      // fetchDistricts();
+      fetchDivisions().then(fetchDistricts);
     });
   </script>
 </body>
