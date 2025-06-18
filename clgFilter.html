@@ -101,6 +101,7 @@
           <th>ID</th>
           <th>Name</th>
           <th>Code</th>
+          <th>Students</th>
           <th>Division</th>
           <th>District</th>
           <th>Upazila</th>
@@ -129,6 +130,10 @@
           <div class="mb-2">
             <label>College Code</label>
             <input type="number" class="form-control" name="college_code" required />
+          </div>
+          <div class="mb-2">
+            <label>Total Students</label>
+            <input type="number" class="form-control" name="students" required />
           </div>
 
           <div class="mb-2">
@@ -169,6 +174,7 @@
           <ul class="list-group">
             <li class="list-group-item"><strong>Name:</strong> <span id="detailName"></span></li>
             <li class="list-group-item"><strong>College Code:</strong> <span id="detailCode"></span></li>
+            <li class="list-group-item"><strong>Total Students:</strong> <span id="detailstudents"></span></li>
             <li class="list-group-item"><strong>Division:</strong> <span id="detailDivision"></span></li>
             <li class="list-group-item"><strong>District:</strong> <span id="detailDistrict"></span></li>
             <li class="list-group-item"><strong>Upazila:</strong> <span id="detailUpazila"></span></li>
@@ -275,6 +281,7 @@
         <td>${col.id}</td>
         <td>${col.name}</td>
         <td>${col.college_code}</td>
+        <td>${col.students}</td>
         <td>${getNameById(divisions, col.division)}</td>
         <td>${getNameById(districts, col.district)}</td>
         <td>${getNameById(upazilas, col.upazila)}</td>
@@ -306,6 +313,7 @@
       document.getElementById("detailName1").textContent = college.name;
       document.getElementById("detailName").textContent = college.name;
       document.getElementById("detailCode").textContent = college.college_code;
+      document.getElementById("detailstudents").textContent = college.students;
       document.getElementById("detailDivision").textContent = getNameById(divisions, college.division);
       document.getElementById("detailDistrict").textContent = getNameById(districts, college.district);
       document.getElementById("detailUpazila").textContent = getNameById(upazilas, college.upazila);
@@ -320,6 +328,7 @@
       document.getElementById("editCollegeId").value = col.id;
       document.querySelector("#collegeForm [name=name]").value = col.name;
       document.querySelector("#collegeForm [name=college_code]").value = col.college_code;
+      document.querySelector("#collegeForm [name=students]").value = col.students;
 
       divisionSelect.value = col.division;
       populateSelect(districtSelect, districts, "division", col.division);
@@ -351,6 +360,7 @@
       const formData = {
         name: this.name.value,
         college_code: this.college_code.value,
+        students: this.students.value,
         division: divisionSelect.value,
         district: districtSelect.value,
         upazila: upazilaSelect.value,

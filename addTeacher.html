@@ -100,6 +100,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>Students</th>
                     <th>College</th>
                     <th>Division</th>
                     <th>District</th>
@@ -137,6 +138,10 @@
                     <div class="mb-2">
                         <label>Phone</label>
                         <input type="text" class="form-control" name="phone" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Total Students</label>
+                        <input type="number" class="form-control" name="students" required />
                     </div>
                     <div class="mb-2">
                         <label>Division</label>
@@ -264,6 +269,7 @@
           <tr>
             <td>${t.id}</td>
             <td>${t.name}</td>
+            <td>${t.students}</td>
             <td>${getName(colleges, t.college)}</td>
             <td>${getName(divisions, t.division)}</td>
             <td>${getName(districts, t.district)}</td>
@@ -300,6 +306,7 @@
             document.querySelector("#teacherForm [name=designation]").value = teacher.designation;
             document.querySelector("#teacherForm [name=subject]").value = teacher.subject;
             document.querySelector("#teacherForm [name=phone]").value = teacher.phone;
+            document.querySelector("#teacherForm [name=students]").value = teacher.students;
 
             teacherDivisionSelect.value = teacher.division;
             populateDropdown(teacherDistrictSelect, districts, "division", teacher.division);
@@ -336,6 +343,7 @@
                 designation: this.designation.value,
                 subject: this.subject.value,
                 phone: this.phone.value,
+                students: this.students.value,
                 division: teacherDivisionSelect.value,
                 district: teacherDistrictSelect.value,
                 upazila: teacherUpazilaSelect.value,
