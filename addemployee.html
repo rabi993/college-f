@@ -20,6 +20,7 @@
         <th>ID</th>
         <th>Image</th>
         <th>User</th>
+        <th>Name</th>
         <th>Mobile No</th>
         <th>Designation</th>
         <th>Address</th>
@@ -160,6 +161,7 @@
         <td>${emp.id}</td>
         <td><img src="${emp.image}" class="image-preview" /></td>
         <td>${userMap[emp.user] || emp.user}</td>
+        <td>${emp.employee_name || 'N/A'}</td>
         <td>${emp.mobile_no}</td>
         <td>${emp.designation}</td>
         <td>${emp.address}</td>
