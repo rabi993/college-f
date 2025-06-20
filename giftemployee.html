@@ -16,7 +16,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-5 fw-bold fs-5 pt-1 px-5">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-4 fw-bold fs-6 pt-1 px-5">
                     <li class="nav-item">
                         <a class="nav-link " aria-current="page" href="index.html">Home</a>
                     </li>
@@ -40,6 +40,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="addgift.html">Gift</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addemployee.html">Employee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addDailyExpense.html">Expense</a>
                     </li>
 
                 </ul>
@@ -81,6 +87,8 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>EmpID</th>
+                    <th>Employee</th>
                     <th>Teacher</th>
                     <th>Subject</th>
                     <th>Books</th>
@@ -114,6 +122,10 @@
                     <select id="giftUnion" class="form-select mb-2" required></select>
                     <select id="giftCollege" class="form-select mb-2" required></select>
                     <select id="giftTeacher" class="form-select mb-2" required></select>
+                    <select id="giftEmployee" class="form-select mb-2" required>
+                        <option value="">Select Employee</option>
+                    </select>
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Save</button>
@@ -124,7 +136,7 @@
     </div>
 
     <script>
-        let divisions = [], districts = [], upazilas = [], unions = [], colleges = [], teachers = [], gifts = [];
+        let divisions = [], districts = [], upazilas = [], unions = [], colleges = [], teachers = [], gifts = [], employees = [];
         const api = "http://127.0.0.1:8000/college/";
 
         const selects = {
@@ -145,25 +157,34 @@
             }
         };
 
-        function populate(select, list, key = null, value = null) {
+        // function populate(select, list, key = null, value = null) {
+        //     select.innerHTML = '<option value="">Select</option>';
+        //     list.filter(i => !key || i[key] == value).forEach(i => {
+        //         select.innerHTML += `<option value="${i.id}">${i.name}</option>`;
+        //     });
+        // }
+        function populate(select, list, key = null, value = null, nameKey = "name") {
             select.innerHTML = '<option value="">Select</option>';
             list.filter(i => !key || i[key] == value).forEach(i => {
-                select.innerHTML += `<option value="${i.id}">${i.name}</option>`;
+                select.innerHTML += `<option value="${i.id}">${i[nameKey]}</option>`;
             });
         }
 
+
         async function loadData() {
-            [divisions, districts, upazilas, unions, colleges, teachers, gifts] = await Promise.all([
+            [divisions, districts, upazilas, unions, colleges, teachers, gifts, employees] = await Promise.all([
                 fetch(api + "divisions/").then(r => r.json()),
                 fetch(api + "districts/").then(r => r.json()),
                 fetch(api + "upazilas/").then(r => r.json()),
                 fetch(api + "unions/").then(r => r.json()),
                 fetch(api + "colleges/").then(r => r.json()),
                 fetch(api + "teachers/").then(r => r.json()),
-                fetch(api + "gift/").then(r => r.json())
+                fetch(api + "gift/").then(r => r.json()),
+                fetch("http://127.0.0.1:8000/employee/list/").then(r => r.json())
             ]);
             populate(selects.gift.division, divisions);
             populate(selects.filter.division, divisions);
+            populate(document.getElementById("giftEmployee"), employees, null, null, "employee_name");
             renderGifts();
         }
 
@@ -184,6 +205,9 @@
                 body.innerHTML += `
                 <tr>
                     <td>${g.id}</td>
+                    <td>${g.employee}</td>
+                    <td>${employees.find(emp => emp.id == g.employee)?.employee_name || "N/A"}</td>
+
                     <td>${teacherName}</td>
                     <td>${g.subject}</td>
                     <td>${g.books}</td>
@@ -213,6 +237,8 @@
             document.querySelector("#giftForm [name=honorium]").value = g.honorium;
             document.querySelector("#giftForm [name=comment]").value = g.comment;
             document.getElementById("giftId").value = g.id;
+            document.getElementById("giftEmployee").value = g.employee;
+
 
             selects.gift.division.value = g.division;
             populate(selects.gift.district, districts, "division", g.division);
@@ -268,6 +294,7 @@
                 union: selects.gift.union.value,
                 college: selects.gift.college.value,
                 teacher: selects.gift.teacher.value,
+                employee: document.getElementById("giftEmployee").value
             };
             const url = api + "gift/" + (id ? id + "/" : "");
             await fetch(url, {
