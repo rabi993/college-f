@@ -16,14 +16,16 @@
 
   <table class="table table-bordered mt-2" id="employeeTable">
     <thead>
-      <tr>
+      <tr class="text-center">
         <th>ID</th>
         <th>Image</th>
         <th>User</th>
         <th>Mobile No</th>
-        <th>Division</th>
-        <th>District</th>
-        <th>Upazila</th>
+        <th>Designation</th>
+        <th>Address</th>
+        <th class="bg-success text-white">Division</th>
+        <th class="bg-success text-white">District</th>
+        <th class="bg-success text-white">Upazila</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -49,6 +51,15 @@
             <div class="col-md-4">
               <label for="mobileNoInput" class="form-label">Mobile No</label>
               <input type="text" name="mobile_no" id="mobileNoInput" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+              <label for="designation" class="form-label">Designation</label>
+              <input type="text" name="designation" id="designation" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+              <label for="address" class="form-label">Address</label>
+              <textarea class="form-control" name="address" id="address" placeholder="Type address" required></textarea>
+                    
             </div>
             <div class="col-md-4">
               <label for="imageInput" class="form-label">Image</label>
@@ -150,6 +161,8 @@
         <td><img src="${emp.image}" class="image-preview" /></td>
         <td>${userMap[emp.user] || emp.user}</td>
         <td>${emp.mobile_no}</td>
+        <td>${emp.designation}</td>
+        <td>${emp.address}</td>
         <td>${emp.division.map(id => divisionMap[id]).join(', ')}</td>
         <td>${emp.district.map(id => districtMap[id]).join(', ')}</td>
         <td>${emp.upazila.map(id => upazilaMap[id]).join(', ')}</td>
@@ -213,6 +226,8 @@
     const emp = await res.json();
     document.getElementById('userSelect').value = emp.user;
     document.getElementById('mobileNoInput').value = emp.mobile_no;
+    document.getElementById('designation').value = emp.designation;
+    document.getElementById('address').value = emp.address;
 
     document.getElementById('divisionSelect').value = null;
     filterDistrictsByDivision(emp.division);
