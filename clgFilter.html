@@ -225,10 +225,10 @@
     }
 
     async function initializeDropdowns() {
-      divisions = await loadData("http://127.0.0.1:8000/college/divisions/");
-      districts = await loadData("http://127.0.0.1:8000/college/districts/");
-      upazilas = await loadData("http://127.0.0.1:8000/college/upazilas/");
-      unions = await loadData("http://127.0.0.1:8000/college/unions/");
+      divisions = await loadData("https://publication-tm35.onrender.com/college/divisions/");
+      districts = await loadData("https://publication-tm35.onrender.com/college/districts/");
+      upazilas = await loadData("https://publication-tm35.onrender.com/college/upazilas/");
+      unions = await loadData("https://publication-tm35.onrender.com/college/unions/");
 
       populateSelect(divisionSelect, divisions);
       populateSelect(filterDivision, divisions);
@@ -266,7 +266,7 @@
     }
 
     async function loadColleges() {
-      const res = await fetch("http://127.0.0.1:8000/college/colleges/");
+      const res = await fetch("https://publication-tm35.onrender.com/college/colleges/");
       allColleges = await res.json();
       applyFilters();
     }
@@ -351,7 +351,7 @@
 
     async function deleteCollege(id) {
       if (confirm("Are you sure you want to delete this college?")) {
-        const res = await fetch(`http://127.0.0.1:8000/college/colleges/${id}/`, { method: "DELETE" });
+        const res = await fetch(`https://publication-tm35.onrender.com/college/colleges/${id}/`, { method: "DELETE" });
         if (res.ok) {
           loadColleges();
         } else {
@@ -373,7 +373,7 @@
         union: unionSelect.value
       };
 
-      const url = id ? `http://127.0.0.1:8000/college/colleges/${id}/` : "http://127.0.0.1:8000/college/colleges/";
+      const url = id ? `https://publication-tm35.onrender.com/college/colleges/${id}/` : "https://publication-tm35.onrender.com/college/colleges/";
       const method = id ? "PUT" : "POST";
 
       const res = await fetch(url, {

@@ -109,8 +109,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const UPZ_API = 'http://127.0.0.1:8000/college/upazilas/';
-      const DIST_API = 'http://127.0.0.1:8000/college/districts/';
+      const UPZ_API = 'https://publication-tm35.onrender.com/college/upazilas/';
+      const DIST_API = 'https://publication-tm35.onrender.com/college/districts/';
 
       const tableBody = document.getElementById("upazilaTableBody");
       const upazilaForm = document.getElementById("upazilaForm");
@@ -150,7 +150,7 @@
           });
       }
 
-      const DIVISION_API = 'http://127.0.0.1:8000/college/divisions/';
+      const DIVISION_API = 'https://publication-tm35.onrender.com/college/divisions/';
       function fetchDivisions() {
         return fetch(DIVISION_API)
           .then(res => res.json())

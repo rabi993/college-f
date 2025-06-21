@@ -209,12 +209,12 @@
         }
 
         async function initializeData() {
-            divisions = await fetchData("http://127.0.0.1:8000/college/divisions/");
-            districts = await fetchData("http://127.0.0.1:8000/college/districts/");
-            upazilas = await fetchData("http://127.0.0.1:8000/college/upazilas/");
-            unions = await fetchData("http://127.0.0.1:8000/college/unions/");
-            colleges = await fetchData("http://127.0.0.1:8000/college/colleges/");
-            teachers = await fetchData("http://127.0.0.1:8000/college/teachers/");
+            divisions = await fetchData("https://publication-tm35.onrender.com/college/divisions/");
+            districts = await fetchData("https://publication-tm35.onrender.com/college/districts/");
+            upazilas = await fetchData("https://publication-tm35.onrender.com/college/upazilas/");
+            unions = await fetchData("https://publication-tm35.onrender.com/college/unions/");
+            colleges = await fetchData("https://publication-tm35.onrender.com/college/colleges/");
+            teachers = await fetchData("https://publication-tm35.onrender.com/college/teachers/");
             populateDropdown(selects.division, divisions);
             populateDropdown(filters.division, divisions);
             populateDropdown(filters.district, districts);
@@ -335,7 +335,7 @@
 
         async function deleteTeacher(id) {
             if (confirm("Delete teacher?")) {
-                await fetch(`http://127.0.0.1:8000/college/teachers/${id}/`, { method: "DELETE" });
+                await fetch(`https://publication-tm35.onrender.com/college/teachers/${id}/`, { method: "DELETE" });
                 await initializeData();
             }
         }
@@ -357,7 +357,7 @@
                 college: teacherCollegeSelect.value
             };
 
-            const url = id ? `http://127.0.0.1:8000/college/teachers/${id}/` : "http://127.0.0.1:8000/college/teachers/";
+            const url = id ? `https://publication-tm35.onrender.com/college/teachers/${id}/` : "https://publication-tm35.onrender.com/college/teachers/";
             const method = id ? "PUT" : "POST";
             await fetch(url, {
                 method,

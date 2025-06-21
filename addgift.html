@@ -137,7 +137,7 @@
 
     <script>
         let divisions = [], districts = [], upazilas = [], unions = [], colleges = [], teachers = [], gifts = [], employees = [];
-        const api = "http://127.0.0.1:8000/college/";
+        const api = "https://publication-tm35.onrender.com/college/";
 
         const selects = {
             gift: {
@@ -180,7 +180,7 @@
                 fetch(api + "colleges/").then(r => r.json()),
                 fetch(api + "teachers/").then(r => r.json()),
                 fetch(api + "gift/").then(r => r.json()),
-                fetch("http://127.0.0.1:8000/employee/list/").then(r => r.json())
+                fetch("https://publication-tm35.onrender.com/employee/list/").then(r => r.json())
             ]);
             populate(selects.gift.division, divisions);
             populate(selects.filter.division, divisions);
@@ -308,7 +308,7 @@
         };
         async function deleteGift(id) {
             if (confirm("Are you sure you want to delete this gift?")) {
-                const response = await fetch(`http://127.0.0.1:8000/college/gift/${id}/`, {
+                const response = await fetch(`https://publication-tm35.onrender.com/college/gift/${id}/`, {
                     method: "DELETE"
                 });
 
