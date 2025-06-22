@@ -93,6 +93,7 @@
                     <th>Subject</th>
                     <th>Books</th>
                     <th>Honorarium</th>
+                    <th>GiftBox</th>
                     <th>College</th>
                     <th>Date(DD-MM-YY)</th>
                     <th>Actions</th>
@@ -113,8 +114,65 @@
                 <div class="modal-body">
                     <input type="hidden" id="giftId">
                     <input type="text" class="form-control mb-2" name="subject" placeholder="Subject" required>
-                    <input type="number" class="form-control mb-2" name="books" placeholder="Books" required>
-                    <input type="number" class="form-control mb-2" name="honorium" placeholder="Honorarium" required>
+                    <!-- <input type="number" class="form-control mb-2" name="books" placeholder="Books">
+                    <input type="number" class="form-control mb-2" name="honorium" placeholder="Honorarium">
+                    <input type="text" class="form-control mb-2" name="gift_box" placeholder="gift_box"> -->
+                    <!-- Books -->
+                    <!-- <div class="mb-3">
+                        <button type="button" class="btn btn-primary" id="books1"
+                            onclick="toggleInput('books')">Books</button>
+                        <div id="books2" style="display: none;">
+                            <label for="books">Books</label>
+                            <input type="number" id="books" class="form-control" name="books" placeholder="Books">
+                        </div>
+                    </div> -->
+
+                    <!-- Honorarium -->
+                    <!-- <div class="mb-3">
+                        <button type="button" class="btn btn-primary" id="Honorarium1"
+                            onclick="toggleInput('Honorarium')">Honorarium</button>
+                        <div id="Honorarium2" style="display: none;">
+                            <label for="honorium">Honorarium</label>
+                            <input type="number" id="honorium" class="form-control" name="honorium"
+                                placeholder="Honorarium">
+                        </div>
+                    </div> -->
+
+                    <!-- Gift Box -->
+                    <!-- <div class="mb-3">
+                        <button type="button" class="btn btn-primary" id="gift_box1"
+                            onclick="toggleInput('gift_box')">Gift Box</button>
+                        <div id="gift_box2" style="display: none;">
+                            <label for="gift_box">Gift Box</label>
+                            <input type="text" id="gift_box" class="form-control" name="gift_box"
+                                placeholder="Gift Box">
+                        </div>
+                    </div> -->
+                    <button type="button" class="btn btn-primary " style="margin-top: 33px;" id="books1"
+                        onclick="showbooks()">Books</button>
+
+                    <div id="books2" style="display: none;">
+                        <label for="books">Books</label>
+                        <input type="number" class="form-control mb-2" name="books" placeholder="Books">
+                    </div>
+
+                    <button type="button" class="btn btn-primary " style="margin-top: 33px;" id="Honorarium1"
+                        onclick="showHonorarium()">Honorarium</button>
+
+                    <div id="Honorarium2" style="display: none;">
+                        <label for="Honorarium">Honorarium</label>
+                        <input type="number" class="form-control mb-2" name="honorium" placeholder="Honorarium">
+                    </div>
+
+
+                    <button type="button" class="btn btn-primary " style="margin-top: 33px;" id="gift_box1"
+                        onclick="showgift_box()">gift box</button>
+
+                    <div id="gift_box2" style="display: none;">
+                        <label for="gift_box">gift box</label>
+                        <input type="text" class="form-control mb-2" name="gift_box" placeholder="gift_box">
+                    </div>
+
                     <textarea class="form-control mb-2" name="comment" placeholder="Comment"></textarea>
                     <select id="giftDivision" class="form-select mb-2" required></select>
                     <select id="giftDistrict" class="form-select mb-2" required></select>
@@ -135,6 +193,25 @@
         </div>
     </div>
 
+    <script>
+        // function toggleInput(field) {
+        //     document.getElementById(`${field}2`).style.display = 'block';
+        //     document.getElementById(`${field}1`).style.display = 'none';
+        // }
+
+          function showbooks() {
+            document.getElementById('books2').style.display = 'block';
+            document.getElementById('books1').style.display = 'none';
+          }
+          function showHonorarium() {
+            document.getElementById('Honorarium2').style.display = 'block';
+            document.getElementById('Honorarium1').style.display = 'none';
+          }
+          function showgift_box() {
+            document.getElementById('gift_box2').style.display = 'block';
+            document.getElementById('gift_box1').style.display = 'none';
+          }
+    </script>
     <script>
         let divisions = [], districts = [], upazilas = [], unions = [], colleges = [], teachers = [], gifts = [], employees = [];
         const api = "https://publication-tm35.onrender.com/college/";
@@ -212,6 +289,7 @@
                     <td>${g.subject}</td>
                     <td>${g.books}</td>
                     <td>${g.honorium}</td>
+                    <td>${g.gift_box}</td>
                     <td>${collegeName}</td>
                     <td>${formatDate(g.create_date)}</td>
 
@@ -235,6 +313,7 @@
             document.querySelector("#giftForm [name=subject]").value = g.subject;
             document.querySelector("#giftForm [name=books]").value = g.books;
             document.querySelector("#giftForm [name=honorium]").value = g.honorium;
+            document.querySelector("#giftForm [name=gift_box]").value = g.gift_box;
             document.querySelector("#giftForm [name=comment]").value = g.comment;
             document.getElementById("giftId").value = g.id;
             document.getElementById("giftEmployee").value = g.employee;
@@ -285,8 +364,9 @@
             const id = document.getElementById("giftId").value;
             const payload = {
                 subject: this.subject.value,
-                books: this.books.value,
-                honorium: this.honorium.value,
+                books: this.books.value ? parseInt(this.books.value) : 0,
+                honorium: this.honorium.value ? parseFloat(this.honorium.value) : 0.0,
+                gift_box: this.gift_box.value || 'No giftBox',
                 comment: this.comment.value,
                 division: selects.gift.division.value,
                 district: selects.gift.district.value,
