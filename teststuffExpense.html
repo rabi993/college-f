@@ -2,15 +2,63 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Staff Daily Expense</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Expense</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
 </head>
 
-<body class="p-4">
+<body class="">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid py-3">
+            <a class="navbar-brand fw-bold fs-1" href="#">EduPublications</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-4 fw-bold fs-6 pt-1 px-5">
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addDivision.html">Division</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addDistrict.html">District</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addUpazila.html">Upazila</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addUnion.html">Union</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="clgFilter.html">College</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addTeacher.html">Teacher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addgift.html">Gift</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addemployee.html">Employee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="addDailyExpense.html">TrnsPExpense</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="addExpense.html">Expense</a>
+                    </li>
 
-  <div class="container">
-    <h2 class="mb-4">Staff Daily Expenses</h2>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+    <h2 class="mb-4">Expenses</h2>
 
     <!-- Add Expense Button -->
     <button class="btn btn-primary mb-3" onclick="openAddModal()">Add Expense</button>
@@ -24,7 +72,6 @@
           <th>Emp Name</th>
           <th>Expense Type</th>
           <th>From</th>
-          <th>To</th>
           <th>Total</th>
           <th>Date</th>
           <th>Actions</th>
@@ -33,7 +80,7 @@
       <tbody id="expenseTableBody"></tbody>
       <tfoot >
         <tr >
-          <td colspan="6" class="text-end fw-bold bg-dark text-white">Total</td>
+          <td colspan="5" class="text-end fw-bold bg-dark text-white">Total</td>
           <td id="totalExpenseSum" class="fw-bold bg-dark text-white"></td>
           <td class="bg-dark text-white" colspan="2"></td>
         </tr>
@@ -62,13 +109,10 @@
             <input type="text" class="form-control" id="expense_type" required>
           </div>
           <div class="mb-3">
-            <label for="travel_from" class="form-label">From</label>
-            <input type="text" class="form-control" id="travel_from" required>
+            <label for="comment" class="form-label">Comment</label>
+            <input type="text" class="form-control" id="comment" >
           </div>
-          <div class="mb-3">
-            <label for="travel_to" class="form-label">To</label>
-            <input type="text" class="form-control" id="travel_to" required>
-          </div>
+          
           <div class="mb-3">
             <label for="total_expense" class="form-label">Total Expense</label>
             <input type="number" class="form-control" id="total_expense" required>
@@ -84,7 +128,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const expenseApi = "https://publication-tm35.onrender.com/employee/sde/";
+    const expenseApi = "https://publication-tm35.onrender.com/employee/expense/";
     const employeeApi = "https://publication-tm35.onrender.com/employee/list/";
     const modal = new bootstrap.Modal(document.getElementById('expenseModal'));
     let employeeMap = {};
@@ -122,8 +166,7 @@
             <td>${exp.employee}</td>
             <td>${exp.employee_name || employeeMap[exp.employee] || 'N/A'}</td>
             <td>${exp.expense_type}</td>
-            <td>${exp.travel_from}</td>
-            <td>${exp.travel_to}</td>
+            <td>${exp.comment}</td>
             <td>${exp.total_expense}</td>
             <td>${new Date(exp.created_at).toLocaleString()}</td>
             <td>
@@ -143,8 +186,7 @@
       const data = {
         employee: document.getElementById('employee').value,
         expense_type: document.getElementById('expense_type').value,
-        travel_from: document.getElementById('travel_from').value,
-        travel_to: document.getElementById('travel_to').value,
+        comment: document.getElementById('comment').value,
         total_expense: document.getElementById('total_expense').value
       };
 
@@ -179,8 +221,7 @@
       document.getElementById('expenseId').value = exp.id;
       document.getElementById('employee').value = exp.employee;
       document.getElementById('expense_type').value = exp.expense_type;
-      document.getElementById('travel_from').value = exp.travel_from;
-      document.getElementById('travel_to').value = exp.travel_to;
+      document.getElementById('comment').value = exp.comment;
       document.getElementById('total_expense').value = exp.total_expense;
       modal.show();
     }
