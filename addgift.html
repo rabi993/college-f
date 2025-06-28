@@ -101,7 +101,8 @@
                     <th>Honorarium</th>
                     <th>GiftBox</th>
                     <th>College</th>
-                    <th>Date(DD-MM-YY)</th>
+                    <th>Approve</th>
+                    <th>Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -297,6 +298,7 @@
                     <td>${g.honorium}</td>
                     <td>${g.gift_box}</td>
                     <td>${collegeName}</td>
+                    <td>${g.approve ? 'Yes' : 'No'}</td>
                     <td>${formatDate(g.create_date)}</td>
 
                     <td>
