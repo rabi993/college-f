@@ -120,7 +120,7 @@
                     <input type="hidden" id="expenseId">
                     <div class="mb-3">
                         <label for="employee" class="form-label">Employee</label>
-                        <select class="form-select" id="employee" required>
+                        <select class="form-select" id="employee" required disabled>
                             <option value="">Select Employee</option>
                         </select>
                     </div>
@@ -163,21 +163,48 @@
         const modal = new bootstrap.Modal(document.getElementById('expenseModal'));
         let employeeMap = {};
 
+        // async function fetchEmployees() {
+        //     const res = await fetch(employeeApi);
+        //     const data = await res.json();
+        //     const select = document.getElementById('employee');
+        //     select.innerHTML = '<option value="">Select Employee</option>';
+        //     employeeMap = {};
+        //     data.forEach(emp => {
+        //         const fullName = `${emp.employee_name}`;
+        //         employeeMap[emp.id] = fullName;
+        //         const option = document.createElement('option');
+        //         option.value = emp.id;
+        //         option.textContent = fullName;
+        //         select.appendChild(option);
+        //     });
+        // }
         async function fetchEmployees() {
             const res = await fetch(employeeApi);
             const data = await res.json();
             const select = document.getElementById('employee');
-            select.innerHTML = '<option value="">Select Employee</option>';
+            const employeeId = localStorage.getItem("employeeid");
+
+            select.innerHTML = '';
             employeeMap = {};
+
             data.forEach(emp => {
                 const fullName = `${emp.employee_name}`;
                 employeeMap[emp.id] = fullName;
-                const option = document.createElement('option');
-                option.value = emp.id;
-                option.textContent = fullName;
-                select.appendChild(option);
+
+                // Only add and select the matching employee
+                if (emp.id == employeeId) {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = fullName;
+                    option.selected = true;
+                    select.appendChild(option);
+                }
             });
+
+            // Make the field read-only (disabled)
+            select.disabled = true;
         }
+
 
         async function loadExpenses() {
             const res = await fetch(expenseApi);

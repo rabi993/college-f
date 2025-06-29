@@ -119,12 +119,18 @@
         </div>
         <div class="modal-body">
           <input type="hidden" id="expenseId">
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label for="employee" class="form-label">Employee</label>
             <select class="form-select" id="employee" required>
               <option value="">Select Employee</option>
             </select>
+          </div> -->
+          <div class="mb-3">
+            <label for="employee" class="form-label">Employee</label>
+            <input type="text" class="form-control" id="employee_name_display" readonly>
+            <input type="hidden" id="employee" required>
           </div>
+
           <!-- <div class="mb-3">
             <label for="expense_type" class="form-label">Expense Type</label>
             <input type="text" class="form-control" id="expense_type" required>
@@ -234,6 +240,8 @@
     document.getElementById('expenseForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const id = document.getElementById('expenseId').value;
+      const employeeId = localStorage.getItem("employeeid");
+
       const data = {
         employee: document.getElementById('employee').value,
         expense_type: document.getElementById('expense_type').value,
@@ -261,23 +269,52 @@
       }
     });
 
+    // function openAddModal() {
+    //   document.getElementById('modalTitle').textContent = 'Add Expense';
+    //   document.getElementById('expenseForm').reset();
+    //   document.getElementById('expenseId').value = '';
+    //   modal.show();
+    // }
     function openAddModal() {
       document.getElementById('modalTitle').textContent = 'Add Expense';
       document.getElementById('expenseForm').reset();
       document.getElementById('expenseId').value = '';
+
+      const employeeId = localStorage.getItem('employeeid');
+      const employeeName = employeeMap[employeeId] || "Unknown";
+
+      document.getElementById('employee').value = employeeId;
+      document.getElementById('employee_name_display').value = employeeName;
+
       modal.show();
     }
 
+
+    // function editExpense(exp) {
+    //   document.getElementById('modalTitle').textContent = 'Edit Expense';
+    //   document.getElementById('expenseId').value = exp.id;
+    //   document.getElementById('employee').value = exp.employee;
+    //   document.getElementById('expense_type').value = exp.expense_type;
+    //   document.getElementById('travel_from').value = exp.travel_from;
+    //   document.getElementById('travel_to').value = exp.travel_to;
+    //   document.getElementById('total_expense').value = exp.total_expense;
+    //   modal.show();
+    // }
     function editExpense(exp) {
       document.getElementById('modalTitle').textContent = 'Edit Expense';
       document.getElementById('expenseId').value = exp.id;
+
       document.getElementById('employee').value = exp.employee;
+      document.getElementById('employee_name_display').value = employeeMap[exp.employee] || exp.employee_name || 'Unknown';
+
       document.getElementById('expense_type').value = exp.expense_type;
       document.getElementById('travel_from').value = exp.travel_from;
       document.getElementById('travel_to').value = exp.travel_to;
       document.getElementById('total_expense').value = exp.total_expense;
+
       modal.show();
     }
+
 
 
 
