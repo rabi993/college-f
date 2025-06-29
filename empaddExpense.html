@@ -174,38 +174,55 @@
             const data = await res.json();
             const tbody = document.getElementById('expenseTableBody');
             const totalCell = document.getElementById('totalExpenseSum');
+
+            const employeeId = localStorage.getItem('employeeid');
+            let foundData = false;
             tbody.innerHTML = '';
             let totalSum = 0;
 
 
             data.forEach(exp => {
-                totalSum += parseFloat(exp.total_expense || 0);
-                tbody.innerHTML += `
-          <tr>
-            <td>${exp.id}</td>
-            <td>${exp.employee}</td>
-            <td>${exp.employee_name || employeeMap[exp.employee] || 'N/A'}</td>
-            <td>${exp.expense_type}</td>
-            <td>${exp.comment}</td>
-            <td>${exp.total_expense}</td>
-            <td>${exp.approve ? 'Yes' : 'No'}</td>
-            <td>${new Date(exp.created_at).toLocaleString()}</td>
-            <td>
-              ${exp.approve
-                    ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>`
-                    : exp.reject
-                        ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
-                        : `
-                        <button class="btn btn-sm btn-info " onclick='editExpense(${JSON.stringify(exp)})' >Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteExpense(${exp.id})" >Delete</button>`
+                if (exp.employee == employeeId) {
+                    foundData = true;
+
+
+
+
+                    totalSum += parseFloat(exp.total_expense || 0);
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${exp.id}</td>
+                            <td>${exp.employee}</td>
+                            <td>${exp.employee_name || employeeMap[exp.employee] || 'N/A'}</td>
+                            <td>${exp.expense_type}</td>
+                            <td>${exp.comment}</td>
+                            <td>${exp.total_expense}</td>
+                            <td>${exp.approve ? 'Yes' : 'No'}</td>
+                            <td>${new Date(exp.created_at).toLocaleString()}</td>
+                            <td>
+                            ${exp.approve
+                                            ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>`
+                                            : exp.reject
+                                                ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
+                                                : `
+                                        <button class="btn btn-sm btn-info " onclick='editExpense(${JSON.stringify(exp)})' >Edit</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteExpense(${exp.id})" >Delete</button>`
+                                        }
+                            
+                            </td>
+                        </tr>
+                    `;
                 }
-              
-            </td>
-          </tr>
-        `;
             });
 
             totalCell.textContent = totalSum.toFixed(2);
+            if (!foundData) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center text-danger">No data found</td>
+                    </tr>
+                `;
+            }
         }
 
         document.getElementById('expenseForm').addEventListener('submit', async function (e) {
@@ -255,7 +272,7 @@
         }
 
 
-        
+
         async function deleteExpense(id) {
             if (confirm("Are you sure you want to delete this expense?")) {
                 const res = await fetch(expenseApi + id + '/', { method: 'DELETE' });

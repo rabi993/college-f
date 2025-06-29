@@ -265,35 +265,48 @@
 
             const body = document.getElementById("giftTableBody");
             body.innerHTML = "";
+            const employeeId = localStorage.getItem('employeeid');
+            let foundData = false;
+
             list.forEach(g => {
-                const collegeName = colleges.find(c => c.id == g.college)?.name || "N/A";
-                const teacherName = teachers.find(t => t.id == g.teacher)?.name || "N/A";
-                body.innerHTML += `
-                <tr>
-                    <td>${g.id}</td>
-                    <td>${g.employee}</td>
-                    <td>${employees.find(emp => emp.id == g.employee)?.employee_name || "N/A"}</td>
-                    <td>${teacherName}</td>
-                    <td>${g.subject}</td>
-                    <td>${g.books}</td>
-                    <td>${g.honorium}</td>
-                    <td>${g.gift_box}</td>
-                    <td>${collegeName}</td>
-                    <td>${g.approve ? 'Yes' : 'No'}</td>
-                    <td>${formatDate(g.create_date)}</td>
-                    <td>
-                        ${g.approve
-                        ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>`
-                        : g.reject
-                            ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
-                            : ` 
-                            <button class="btn btn-sm btn-info " onclick='editGift(${g.id})' >Edit</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})" >Delete</button>`
-                    }
-              
-                    </td>
-                    </tr>`;
+                if (g.employee == employeeId) {
+                    foundData = true;
+                    const collegeName = colleges.find(c => c.id == g.college)?.name || "N/A";
+                    const teacherName = teachers.find(t => t.id == g.teacher)?.name || "N/A";
+                    body.innerHTML += `
+                        <tr>
+                            <td>${g.id}</td>
+                            <td>${g.employee}</td>
+                            <td>${employees.find(emp => emp.id == g.employee)?.employee_name || "N/A"}</td>
+                            <td>${teacherName}</td>
+                            <td>${g.subject}</td>
+                            <td>${g.books}</td>
+                            <td>${g.honorium}</td>
+                            <td>${g.gift_box}</td>
+                            <td>${collegeName}</td>
+                            <td>${g.approve ? 'Yes' : 'No'}</td>
+                            <td>${formatDate(g.create_date)}</td>
+                            <td>
+                                ${g.approve
+                                    ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>`
+                                    : g.reject
+                                        ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
+                                        : ` 
+                                    <button class="btn btn-sm btn-info " onclick='editGift(${g.id})' >Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})" >Delete</button>`
+                                }
+                    
+                            </td>
+                        </tr>`;
+                }
             });
+            if (!foundData) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center text-danger">No data found</td>
+                    </tr>
+                `;
+            }
         }
         // <td>
         //     <button class="btn btn-sm btn-warning" onclick='approveGift(${g.id})'>Approve</button>
