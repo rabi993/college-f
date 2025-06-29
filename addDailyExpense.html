@@ -17,7 +17,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-4 fw-bold fs-6 pt-1 px-5">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1 fw-bold fs-6 pt-1 px-3">
           <li class="nav-item">
             <a class="nav-link " aria-current="page" href="index.html">Home</a>
           </li>
@@ -53,6 +53,12 @@
           </li>
           <li class="nav-item">
             <a class="nav-link " aria-current="page" href="giftemployee.html">empGift</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " aria-current="page" href="empaddDailyExpense.html">empTEx</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " aria-current="page" href="empaddExpense.html">empEX</a>
           </li>
 
         </ul>
@@ -186,11 +192,14 @@
             <td>${new Date(exp.created_at).toLocaleString()}</td>
             <td>
               ${exp.approve
-                ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button><button class="btn btn-sm btn-info d-none" onclick='editExpense(${JSON.stringify(exp)})' >Edit</button>
-              <button class="btn btn-sm btn-danger d-none" onclick="deleteExpense(${exp.id})" >Delete</button>`
-                : `<button class="btn btn-sm btn-warning" onclick='approveExpense(${exp.id})'>Approve</button> <button class="btn btn-sm btn-info " onclick='editExpense(${JSON.stringify(exp)})' >Edit</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteExpense(${exp.id})" >Delete</button>`
-              }
+            ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>`
+            : exp.reject
+              ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
+              : `<button class="btn btn-sm btn-warning" onclick='approveExpense(${exp.id})'>Approve</button> 
+                   <button class="btn btn-sm btn-secondary" onclick="rejectExpense(${exp.id})">Reject</button>
+                   <button class="btn btn-sm btn-info " onclick='editExpense(${JSON.stringify(exp)})' >Edit</button>
+                   <button class="btn btn-sm btn-danger" onclick="deleteExpense(${exp.id})" >Delete</button>`
+          }
               
             </td>
           </tr>
@@ -273,6 +282,33 @@
         }
       } else {
         alert('This expense is already approved.');
+      }
+    }
+    async function rejectExpense(id) {
+      // Fetch the full expense object to check if it's already approved
+      const res1 = await fetch(`${expenseApi}${id}/`);
+      const exp = await res1.json();
+
+      if (!exp.approve) {
+        const confirmApprove = confirm(`Are you sure you want to reject expense ID ${id}?`);
+        if (!confirmApprove) return;
+
+        const res2 = await fetch(`${expenseApi}${id}/`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ reject: true })
+        });
+
+        if (res2.ok) {
+          alert('Expense rejected successfully!');
+          loadExpenses();
+        } else {
+          alert('Failed to reject expense.');
+        }
+      } else {
+        alert('This expense is already rejected.');
       }
     }
 
