@@ -277,9 +277,9 @@
                     <td>${formatDate(g.create_date)}</td>
                     <td>
                         ${g.approve
-                        ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>
-                            <button class="btn btn-sm btn-info d-none" onclick='editGift(${g.id})' >Edit</button>
-                            <button class="btn btn-sm btn-danger d-none" onclick="deleteGift(${g.id})" >Delete</button>`
+                        ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>`
+                        : g.reject
+                            ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
                         : ` 
                             <button class="btn btn-sm btn-info " onclick='editGift(${g.id})' >Edit</button>
                             <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})" >Delete</button>`

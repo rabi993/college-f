@@ -301,20 +301,36 @@
                     <td>${g.approve ? 'Yes' : 'No'}</td>
                     <td>${formatDate(g.create_date)}</td>
                     <td>
-                        ${g.approve
-                        ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>
-                                   <button class="btn btn-sm btn-info d-none" onclick='editGift(${g.id})' >Edit</button>
-                                   <button class="btn btn-sm btn-danger d-none" onclick="deleteGift(${g.id})" >Delete</button>`
-                        : `<button class="btn btn-sm btn-warning" onclick='approveGift(${g.id})'>Approve</button> 
-                                   <button class="btn btn-sm btn-info " onclick='editGift(${g.id})' >Edit</button>
-                                   <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})" >Delete</button>`
-                    }
-              
+                        ${
+                            g.approve
+                            ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
+                            : g.reject
+                            ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
+                            : `
+                                <button class="btn btn-sm btn-warning" onclick="approveGift(${g.id})">Approve</button>
+                                <button class="btn btn-sm btn-secondary" onclick="rejectGift(${g.id})">Reject</button>
+                                <button class="btn btn-sm btn-info" onclick="editGift(${g.id})">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})">Delete</button>
+                            `
+                        }
                     </td>
 
+                    
                     </tr>`;
-            });
-        }
+                });
+            }
+            // <td>
+            //     ${g.approve
+            //     ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>
+            //                <button class="btn btn-sm btn-info d-none" onclick='editGift(${g.id})' >Edit</button>
+            //                <button class="btn btn-sm btn-danger d-none" onclick="deleteGift(${g.id})" >Delete</button>`
+            //     : `<button class="btn btn-sm btn-warning" onclick='approveGift(${g.id})'>Approve</button> 
+            //                <button class="btn btn-sm btn-info " onclick='editGift(${g.id})' >Edit</button>
+            //                <button class="btn btn-sm btn-secondary " onclick='rejectGift(${g.id})' >Reject</button>
+            //                <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})" >Delete</button>`
+            // }
+      
+            // </td>
         // <td>
         //     <button class='btn btn-sm btn-warning' onclick='editGift(${g.id})'>Edit</button> 
         //     <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})">Delete</button>
@@ -412,7 +428,7 @@
             const exp = await res1.json();
 
             if (!exp.approve) {
-                const confirmApprove = confirm(`Are you sure you want to approve expense ID ${id}?`);
+                const confirmApprove = confirm(`Are you sure you want to approve gift ID ${id}?`);
                 if (!confirmApprove) return;
 
                 const res2 = await fetch(`https://publication-tm35.onrender.com/college/gift/${id}/`, {
@@ -424,13 +440,40 @@
                 });
 
                 if (res2.ok) {
-                    alert('Expense approved successfully!');
+                    alert('Gift approved successfully!');
                     await loadData();  // Refresh full data
                 } else {
-                    alert('Failed to approve expense.');
+                    alert('Failed to approve gift.');
                 }
             } else {
-                alert('This expense is already approved.');
+                alert('This gift is already approved.');
+            }
+        }
+        async function rejectGift(id) {
+            // Fetch the full expense object to check if it's already approved
+            const res1 = await fetch(`https://publication-tm35.onrender.com/college/gift/${id}/`);
+            const exp = await res1.json();
+
+            if (!exp.approve) {
+                const confirmApprove = confirm(`Are you sure you want to reject gift ID ${id}?`);
+                if (!confirmApprove) return;
+
+                const res2 = await fetch(`https://publication-tm35.onrender.com/college/gift/${id}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reject: true })
+                });
+
+                if (res2.ok) {
+                    alert('Gift approved successfully!');
+                    await loadData();  // Refresh full data
+                } else {
+                    alert('Failed to reject gift.');
+                }
+            } else {
+                alert('This gift is already Rejected.');
             }
         }
         async function deleteGift(id) {
