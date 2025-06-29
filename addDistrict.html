@@ -21,44 +21,54 @@
             <a class="nav-link " aria-current="page" href="index.html">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addDivision.html">Division</a>
+            <a class="nav-link admin" aria-current="page" href="addDivision.html">Division</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="addDistrict.html">District</a>
+            <a class="nav-link admin active" aria-current="page" href="addDistrict.html">District</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addUpazila.html">Upazila</a>
+            <a class="nav-link admin" aria-current="page" href="addUpazila.html">Upazila</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addUnion.html">Union</a>
+            <a class="nav-link admin" aria-current="page" href="addUnion.html">Union</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="clgFilter.html">College</a>
+            <a class="nav-link admin" aria-current="page" href="clgFilter.html">College</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addTeacher.html">Teacher</a>
+            <a class="nav-link admin" aria-current="page" href="addTeacher.html">Teacher</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addgift.html">Gift</a>
+            <a class="nav-link admin" aria-current="page" href="addgift.html">Gift</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addemployee.html">Employee</a>
+            <a class="nav-link admin" aria-current="page" href="addemployee.html">Employee</a>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addDailyExpense.html">TrnsPExpense</a>
+            <a class="nav-link admin" aria-current="page" href="addDailyExpense.html">TrnsPExpense</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="addExpense.html">Expense</a>
+            <a class="nav-link admin" aria-current="page" href="addExpense.html">Expense</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="giftemployee.html">empGift</a>
+            <a class="nav-link employee" aria-current="page" href="giftemployee.html">empGift</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="empaddDailyExpense.html">empTEx</a>
+            <a class="nav-link employee" aria-current="page" href="empaddDailyExpense.html">empTEx</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " aria-current="page" href="empaddExpense.html">empEX</a>
+            <a class="nav-link employee" aria-current="page" href="empaddExpense.html">empEX</a>
           </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link login" aria-current="page" href="login.html">login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link logout" aria-current="page" href="#" onclick="handlelogOut()">Logout</a>
+          </li> -->
 
+        </ul>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1 fw-bold fs-6 pt-1 px-3">
+          <li class="nav-item"><a class="nav-link login" href="login.html">Login</a></li>
+          <li class="nav-item"><a class="nav-link logout" href="#" onclick="handlelogOut()">Logout</a></li>
         </ul>
 
       </div>
@@ -227,6 +237,8 @@
       fetchDivisions().then(fetchDistricts);
     });
   </script>
+  <script src="roleHandler.js"></script>
+  <script src="logout.js"></script>
 </body>
 
 </html>
