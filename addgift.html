@@ -300,14 +300,25 @@
                     <td>${collegeName}</td>
                     <td>${g.approve ? 'Yes' : 'No'}</td>
                     <td>${formatDate(g.create_date)}</td>
-
                     <td>
-                        <button class='btn btn-sm btn-warning' onclick='editGift(${g.id})'>Edit</button> 
-                        <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})">Delete</button>
+                        ${g.approve
+                        ? `<button class="btn btn-sm" style="background-color: green; color: white;" disabled>Approved</button>
+                                   <button class="btn btn-sm btn-info d-none" onclick='editGift(${g.id})' >Edit</button>
+                                   <button class="btn btn-sm btn-danger d-none" onclick="deleteGift(${g.id})" >Delete</button>`
+                        : `<button class="btn btn-sm btn-warning" onclick='approveGift(${g.id})'>Approve</button> 
+                                   <button class="btn btn-sm btn-info " onclick='editGift(${g.id})' >Edit</button>
+                                   <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})" >Delete</button>`
+                    }
+              
                     </td>
-                </tr>`;
+
+                    </tr>`;
             });
         }
+        // <td>
+        //     <button class='btn btn-sm btn-warning' onclick='editGift(${g.id})'>Edit</button> 
+        //     <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})">Delete</button>
+        // </td>
         function formatDate(isoDate) {
             const date = new Date(isoDate);
             const day = String(date.getDate()).padStart(2, '0');
@@ -394,6 +405,34 @@
             this.reset();
             loadData();
         };
+
+        async function approveGift(id) {
+            // Fetch the full expense object to check if it's already approved
+            const res1 = await fetch(`https://publication-tm35.onrender.com/college/gift/${id}/`);
+            const exp = await res1.json();
+
+            if (!exp.approve) {
+                const confirmApprove = confirm(`Are you sure you want to approve expense ID ${id}?`);
+                if (!confirmApprove) return;
+
+                const res2 = await fetch(`https://publication-tm35.onrender.com/college/gift/${id}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ approve: true })
+                });
+
+                if (res2.ok) {
+                    alert('Expense approved successfully!');
+                    await loadData();  // Refresh full data
+                } else {
+                    alert('Failed to approve expense.');
+                }
+            } else {
+                alert('This expense is already approved.');
+            }
+        }
         async function deleteGift(id) {
             if (confirm("Are you sure you want to delete this gift?")) {
                 const response = await fetch(`https://publication-tm35.onrender.com/college/gift/${id}/`, {
