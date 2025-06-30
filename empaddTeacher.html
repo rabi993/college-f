@@ -42,7 +42,7 @@
                         <a class="nav-link employee" aria-current="page" href="empclgFilter.html">College</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link employee" aria-current="page" href="empaddTeacher.html">Teacher</a>
+                        <a class="nav-link employee active" aria-current="page" href="empaddTeacher.html">Teacher</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link admin" aria-current="page" href="addgift.html">Gift</a>
@@ -85,7 +85,7 @@
         <h2 class="mb-4">Teacher List</h2>
 
         <div class="d-flex flex-wrap gap-2 mb-3">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal">Add Teacher</button>
+            <!-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal">Add Teacher</button> -->
             <button class="btn btn-secondary" id="resetFilters">Reset Filters</button>
         </div>
 
@@ -140,7 +140,7 @@
                     <th>District</th>
                     <th>Upazila</th>
                     <th>Union</th>
-                    <th>Actions</th>
+                    <!-- <th>Actions</th> -->
                 </tr>
             </thead>
             <tbody id="teacherTableBody"></tbody>
@@ -300,23 +300,23 @@
             teacherTable.innerHTML = "";
             filtered.forEach(t => {
                 teacherTable.innerHTML += `
-          <tr>
-            <td>${t.id}</td>
-            <td>${t.name}</td>
-            <td>${t.students}</td>
-            <td>${getName(colleges, t.college)}</td>
-            <td>${getName(divisions, t.division)}</td>
-            <td>${getName(districts, t.district)}</td>
-            <td>${getName(upazilas, t.upazila)}</td>
-            <td>${getName(unions, t.union)}</td>
-            <td>
-              <button class="btn btn-sm btn-warning edit-btn" data-id="${t.id}">Edit</button>
-              <button class="btn btn-sm btn-danger" onclick='deleteTeacher(${t.id})'>Delete</button>
-            </td>
-          </tr>
-        `;
-            });
-
+                    <tr>
+                        <td>${t.id}</td>
+                        <td>${t.name}</td>
+                        <td>${t.students}</td>
+                        <td>${getName(colleges, t.college)}</td>
+                        <td>${getName(divisions, t.division)}</td>
+                        <td>${getName(districts, t.district)}</td>
+                        <td>${getName(upazilas, t.upazila)}</td>
+                        <td>${getName(unions, t.union)}</td>
+                    </tr>
+                `;
+        });
+        
+        // <td>
+        //   <button class="btn btn-sm btn-warning edit-btn" data-id="${t.id}">Edit</button>
+        //   <button class="btn btn-sm btn-danger" onclick='deleteTeacher(${t.id})'>Delete</button>
+        // </td>
             // Attach event listeners to edit buttons
             document.querySelectorAll(".edit-btn").forEach(button => {
                 button.addEventListener("click", function () {
@@ -361,41 +361,41 @@
         }
 
 
-        async function deleteTeacher(id) {
-            if (confirm("Delete teacher?")) {
-                await fetch(`https://publication-tm35.onrender.com/college/teachers/${id}/`, { method: "DELETE" });
-                await initializeData();
-            }
-        }
+        // async function deleteTeacher(id) {
+        //     if (confirm("Delete teacher?")) {
+        //         await fetch(`https://publication-tm35.onrender.com/college/teachers/${id}/`, { method: "DELETE" });
+        //         await initializeData();
+        //     }
+        // }
 
-        document.getElementById("teacherForm").onsubmit = async function (e) {
-            e.preventDefault();
-            const id = document.getElementById("editTeacherId").value;
+        // document.getElementById("teacherForm").onsubmit = async function (e) {
+        //     e.preventDefault();
+        //     const id = document.getElementById("editTeacherId").value;
 
-            const formData = {
-                name: this.name.value,
-                designation: this.designation.value,
-                subject: this.subject.value,
-                phone: this.phone.value,
-                students: this.students.value,
-                division: teacherDivisionSelect.value,
-                district: teacherDistrictSelect.value,
-                upazila: teacherUpazilaSelect.value,
-                union: teacherUnionSelect.value,
-                college: teacherCollegeSelect.value
-            };
+        //     const formData = {
+        //         name: this.name.value,
+        //         designation: this.designation.value,
+        //         subject: this.subject.value,
+        //         phone: this.phone.value,
+        //         students: this.students.value,
+        //         division: teacherDivisionSelect.value,
+        //         district: teacherDistrictSelect.value,
+        //         upazila: teacherUpazilaSelect.value,
+        //         union: teacherUnionSelect.value,
+        //         college: teacherCollegeSelect.value
+        //     };
 
-            const url = id ? `https://publication-tm35.onrender.com/college/teachers/${id}/` : "https://publication-tm35.onrender.com/college/teachers/";
-            const method = id ? "PUT" : "POST";
-            await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            });
-            bootstrap.Modal.getInstance(document.getElementById("teacherModal")).hide();
-            this.reset();
-            await initializeData();
-        };
+        //     const url = id ? `https://publication-tm35.onrender.com/college/teachers/${id}/` : "https://publication-tm35.onrender.com/college/teachers/";
+        //     const method = id ? "PUT" : "POST";
+        //     await fetch(url, {
+        //         method,
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify(formData)
+        //     });
+        //     bootstrap.Modal.getInstance(document.getElementById("teacherModal")).hide();
+        //     this.reset();
+        //     await initializeData();
+        // };
 
         Object.values(filters).forEach(input => input.addEventListener("change", renderTeachers));
         filters.teacher.addEventListener("input", renderTeachers);

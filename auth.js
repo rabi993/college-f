@@ -143,9 +143,14 @@ const handleLogin = (event) => {
 
   const username = getValue("login-username");
   const password = getValue("login-password");
+  const spinner = document.getElementById("login-spinner");
+  spinner.style.display = "block";
+  const loginButton = document.querySelector('#login-form button[type="submit"]');
+  loginButton.disabled = true;
 
   if (!username || !password) {
     alert("Please provide both username and password.");
+    spinner.style.display = "none";
     return;
   }
 
@@ -221,13 +226,13 @@ const handleLogin = (event) => {
                 // Redirect based on role
                 if (userData.is_superuser) {
                   window.location.href = "http://127.0.0.1:5500/index.html";
-                  // window.location.href = "http://hfb246.surge.sh/indexa.html";
+                  // window.location.href = "http://college296.surge.sh/index.html";
                 } else if (localStorage.getItem("employeeid")) {
                   window.location.href = "http://127.0.0.1:5500/index.html";
-                  // window.location.href = "http://hfb246.surge.sh/indexap.html";
+                  // window.location.href = "http://college296.surge.sh/index.html";
                 } else {
                   window.location.href = "http://127.0.0.1:5500/login.html";
-                  // window.location.href = "http://hfb246.surge.sh/login.html";
+                  // window.location.href = "http://college296.surge.sh/login.html";
                 }
               })
               .catch((error) => {
@@ -246,5 +251,9 @@ const handleLogin = (event) => {
     .catch((error) => {
       console.error("Login error:", error);
       alert(error.message);
+    })
+    .finally(() => {
+      spinner.style.display = "none";
+      loginButton.disabled = false;
     });
 };

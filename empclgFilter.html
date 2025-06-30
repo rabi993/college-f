@@ -39,7 +39,7 @@
             <a class="nav-link admin" aria-current="page" href="addTeacher.html">Teacher</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link employee" aria-current="page" href="empclgFilter.html">College</a>
+            <a class="nav-link employee active" aria-current="page" href="empclgFilter.html">College</a>
           </li>
           <li class="nav-item">
             <a class="nav-link employee" aria-current="page" href="empaddTeacher.html">Teacher</a>
@@ -84,7 +84,7 @@
   <div class="container">
     <h2 class="mb-4">College List</h2>
     <div class="d-flex flex-wrap gap-2 mb-3">
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#collegeModal">Add College</button>
+      <!-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#collegeModal">Add College</button> -->
       <button class="btn btn-secondary" id="resetFilters">Reset Filters</button>
     </div>
     <!-- Filter Controls -->
@@ -140,7 +140,7 @@
           <th>District</th>
           <th>Upazila</th>
           <th>Union</th>
-          <th>Actions</th>
+          <!-- <th>Actions</th> -->
         </tr>
       </thead>
       <tbody></tbody>
@@ -322,12 +322,12 @@
         <td>${getNameById(unions, col.union)}</td>
         <td>
           <button class="btn btn-sm btn-info me-1" onclick='showDetails(${JSON.stringify(col)})'>Details</button>
-          <button class="btn btn-sm btn-warning" onclick='editCollege(${JSON.stringify(col)})'>Edit</button>
-          <button class="btn btn-sm btn-danger" onclick='deleteCollege(${col.id})'>Delete</button>
-        </td>
-      </tr>`;
-      });
-    }
+          </td>
+          </tr>`;
+        });
+      }
+      // <button class="btn btn-sm btn-warning" onclick='editCollege(${JSON.stringify(col)})'>Edit</button>
+      // <button class="btn btn-sm btn-danger" onclick='deleteCollege(${col.id})'>Delete</button>
 
     function getNameById(list, id) {
       const item = list.find(i => i.id == id);
@@ -377,49 +377,49 @@
       new bootstrap.Modal(document.getElementById("collegeModal")).show();
     }
 
-    async function deleteCollege(id) {
-      if (confirm("Are you sure you want to delete this college?")) {
-        const res = await fetch(`https://publication-tm35.onrender.com/college/colleges/${id}/`, { method: "DELETE" });
-        if (res.ok) {
-          loadColleges();
-        } else {
-          alert("Failed to delete college.");
-        }
-      }
-    }
+    // async function deleteCollege(id) {
+    //   if (confirm("Are you sure you want to delete this college?")) {
+    //     const res = await fetch(`https://publication-tm35.onrender.com/college/colleges/${id}/`, { method: "DELETE" });
+    //     if (res.ok) {
+    //       loadColleges();
+    //     } else {
+    //       alert("Failed to delete college.");
+    //     }
+    //   }
+    // }
 
-    document.getElementById("collegeForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const id = document.getElementById("editCollegeId").value;
-      const formData = {
-        name: this.name.value,
-        college_code: this.college_code.value,
-        students: this.students.value,
-        division: divisionSelect.value,
-        district: districtSelect.value,
-        upazila: upazilaSelect.value,
-        union: unionSelect.value
-      };
+    // document.getElementById("collegeForm").addEventListener("submit", async function (e) {
+    //   e.preventDefault();
+    //   const id = document.getElementById("editCollegeId").value;
+    //   const formData = {
+    //     name: this.name.value,
+    //     college_code: this.college_code.value,
+    //     students: this.students.value,
+    //     division: divisionSelect.value,
+    //     district: districtSelect.value,
+    //     upazila: upazilaSelect.value,
+    //     union: unionSelect.value
+    //   };
 
-      const url = id ? `https://publication-tm35.onrender.com/college/colleges/${id}/` : "https://publication-tm35.onrender.com/college/colleges/";
-      const method = id ? "PUT" : "POST";
+    //   const url = id ? `https://publication-tm35.onrender.com/college/colleges/${id}/` : "https://publication-tm35.onrender.com/college/colleges/";
+    //   const method = id ? "PUT" : "POST";
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
+    //   const res = await fetch(url, {
+    //     method,
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(formData)
+    //   });
 
-      if (res.ok) {
-        bootstrap.Modal.getInstance(document.getElementById("collegeModal")).hide();
-        this.reset();
-        document.getElementById("editCollegeId").value = "";
-        document.getElementById("collegeModalLabel").innerText = "Add College";
-        await loadColleges();
-      } else {
-        alert("Failed to save college.");
-      }
-    });
+    //   if (res.ok) {
+    //     bootstrap.Modal.getInstance(document.getElementById("collegeModal")).hide();
+    //     this.reset();
+    //     document.getElementById("editCollegeId").value = "";
+    //     document.getElementById("collegeModalLabel").innerText = "Add College";
+    //     await loadColleges();
+    //   } else {
+    //     alert("Failed to save college.");
+    //   }
+    // });
     // ... Keep your editCollege, deleteCollege, and form submit handlers from existing script ...
 
     window.onload = async () => {
