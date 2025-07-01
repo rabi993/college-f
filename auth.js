@@ -225,14 +225,14 @@ const handleLogin = (event) => {
 
                 // Redirect based on role
                 if (userData.is_superuser) {
-                  window.location.href = "http://127.0.0.1:5500/index.html";
-                  // window.location.href = "http://college296.surge.sh/index.html";
+                  // window.location.href = "http://127.0.0.1:5500/index.html";
+                  window.location.href = "http://college296.surge.sh/index.html";
                 } else if (localStorage.getItem("employeeid")) {
-                  window.location.href = "http://127.0.0.1:5500/index.html";
-                  // window.location.href = "http://college296.surge.sh/index.html";
+                  // window.location.href = "http://127.0.0.1:5500/index.html";
+                  window.location.href = "http://college296.surge.sh/index.html";
                 } else {
-                  window.location.href = "http://127.0.0.1:5500/login.html";
-                  // window.location.href = "http://college296.surge.sh/login.html";
+                  // window.location.href = "http://127.0.0.1:5500/login.html";
+                  window.location.href = "http://college296.surge.sh/login.html";
                 }
               })
               .catch((error) => {
@@ -257,3 +257,5 @@ const handleLogin = (event) => {
       loginButton.disabled = false;
     });
 };
+
+

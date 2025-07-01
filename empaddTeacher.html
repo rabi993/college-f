@@ -85,7 +85,7 @@
         <h2 class="mb-4">Teacher List</h2>
 
         <div class="d-flex flex-wrap gap-2 mb-3">
-            <!-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal">Add Teacher</button> -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal">Add Teacher</button>
             <button class="btn btn-secondary" id="resetFilters">Reset Filters</button>
         </div>
 
@@ -368,34 +368,34 @@
         //     }
         // }
 
-        // document.getElementById("teacherForm").onsubmit = async function (e) {
-        //     e.preventDefault();
-        //     const id = document.getElementById("editTeacherId").value;
+        document.getElementById("teacherForm").onsubmit = async function (e) {
+            e.preventDefault();
+            const id = document.getElementById("editTeacherId").value;
 
-        //     const formData = {
-        //         name: this.name.value,
-        //         designation: this.designation.value,
-        //         subject: this.subject.value,
-        //         phone: this.phone.value,
-        //         students: this.students.value,
-        //         division: teacherDivisionSelect.value,
-        //         district: teacherDistrictSelect.value,
-        //         upazila: teacherUpazilaSelect.value,
-        //         union: teacherUnionSelect.value,
-        //         college: teacherCollegeSelect.value
-        //     };
+            const formData = {
+                name: this.name.value,
+                designation: this.designation.value,
+                subject: this.subject.value,
+                phone: this.phone.value,
+                students: this.students.value,
+                division: teacherDivisionSelect.value,
+                district: teacherDistrictSelect.value,
+                upazila: teacherUpazilaSelect.value,
+                union: teacherUnionSelect.value,
+                college: teacherCollegeSelect.value
+            };
 
-        //     const url = id ? `https://publication-tm35.onrender.com/college/teachers/${id}/` : "https://publication-tm35.onrender.com/college/teachers/";
-        //     const method = id ? "PUT" : "POST";
-        //     await fetch(url, {
-        //         method,
-        //         headers: { "Content-Type": "application/json" },
-        //         body: JSON.stringify(formData)
-        //     });
-        //     bootstrap.Modal.getInstance(document.getElementById("teacherModal")).hide();
-        //     this.reset();
-        //     await initializeData();
-        // };
+            const url = id ? `https://publication-tm35.onrender.com/college/teachers/${id}/` : "https://publication-tm35.onrender.com/college/teachers/";
+            const method = id ? "PUT" : "POST";
+            await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+            bootstrap.Modal.getInstance(document.getElementById("teacherModal")).hide();
+            this.reset();
+            await initializeData();
+        };
 
         Object.values(filters).forEach(input => input.addEventListener("change", renderTeachers));
         filters.teacher.addEventListener("input", renderTeachers);
