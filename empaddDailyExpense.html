@@ -98,6 +98,7 @@
           <th>Expense Type</th>
           <th>From</th>
           <th>To</th>
+          <th>Comment</th>
           <th>Total</th>
           <th>Approve</th>
           <th>Date</th>
@@ -107,7 +108,7 @@
       <tbody id="expenseTableBody"></tbody>
       <tfoot>
         <tr>
-          <td colspan="6" class="text-end fw-bold bg-dark text-white">Total</td>
+          <td colspan="7" class="text-end fw-bold bg-dark text-white">Total</td>
           <td id="totalExpenseSum" class="fw-bold bg-dark text-white"></td>
           <td class="bg-dark text-white" colspan="3"></td>
         </tr>
@@ -157,6 +158,10 @@
           <div class="mb-3">
             <label for="total_expense" class="form-label">Total Expense</label>
             <input type="number" class="form-control" id="total_expense" required>
+          </div>
+          <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <input type="text" class="form-control" id="comment">
           </div>
         </div>
         <div class="modal-footer">
@@ -213,6 +218,7 @@
               <td>${exp.expense_type}</td>
               <td>${exp.travel_from}</td>
               <td>${exp.travel_to}</td>
+              <td>${exp.comment}</td>
               <td>${exp.total_expense}</td>
               <td>${exp.approve ? 'Yes' : 'No'}</td>
               <td>${new Date(exp.created_at).toLocaleString()}</td>
@@ -253,6 +259,7 @@
         expense_type: document.getElementById('expense_type').value,
         travel_from: document.getElementById('travel_from').value,
         travel_to: document.getElementById('travel_to').value,
+        comment: document.getElementById('comment').value,
         total_expense: document.getElementById('total_expense').value
       };
 
@@ -316,6 +323,7 @@
       document.getElementById('expense_type').value = exp.expense_type;
       document.getElementById('travel_from').value = exp.travel_from;
       document.getElementById('travel_to').value = exp.travel_to;
+      document.getElementById('comment').value = exp.comment;
       document.getElementById('total_expense').value = exp.total_expense;
 
       modal.show();
